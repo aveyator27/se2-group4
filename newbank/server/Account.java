@@ -3,6 +3,7 @@ package newbank.server;
 public class Account {
 	
 	private String accountName;
+
 	private double openingBalance;
 
 	public Account(String accountName, double openingBalance) {
@@ -11,7 +12,7 @@ public class Account {
 	}
 	
 	public String toString() {
-		return (accountName + ": " + openingBalance);
+		return (accountName + ": " + String.format("%.2f",openingBalance) + "\n");
 	}
 
 }
