@@ -13,24 +13,17 @@ public class NewBank {
 	}
 	
 	private void addTestData() {
-		Customer bhagy = new Customer("1234");
-		bhagy.addAccount(new Account("Main",1000.0));
+		Customer bhagy = new Customer();
+		bhagy.addAccount(new Account("Main", 1000.0));
 		customers.put("Bhagy", bhagy);
 		
-		Customer christina = new Customer("Tina01");
+		Customer christina = new Customer();
 		christina.addAccount(new Account("Savings", 1500.0));
 		customers.put("Christina", christina);
 		
-		Customer john = new Customer("JohnDoe");
+		Customer john = new Customer();
 		john.addAccount(new Account("Checking", 250.0));
 		customers.put("John", john);
-
-		Customer marc = new Customer("password");
-		marc.addAccount(new Account("Main", 134));
-		marc.addAccount(new Account("Savings", 89));
-		marc.addAccount(new Account("Secret Bottlecaps Stash", 132341645));
-		customers.put("Marc",marc);
-
 	}
 	
 	public static NewBank getBank() {
@@ -38,7 +31,7 @@ public class NewBank {
 	}
 	
 	public synchronized CustomerID checkLogInDetails(String userName, String password) {
-		if(customers.containsKey(userName) && password.equals(customers.get(userName).getPassword())) {
+		if(customers.containsKey(userName)) {
 			return new CustomerID(userName);
 		}
 		return null;
