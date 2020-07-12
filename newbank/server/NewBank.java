@@ -28,7 +28,7 @@ public class NewBank {
 		Customer marc = new Customer("password");
 		marc.addAccount(new Account("Main", 134));
 		marc.addAccount(new Account("Savings", 89));
-		marc.addAccount(new Account("Secret Bottlecaps Stash", 132341645));
+		marc.addAccount(new Account("Secret Bottlecaps Stash", 1645));
 		customers.put("Marc",marc);
 
 	}
@@ -46,9 +46,19 @@ public class NewBank {
 
 	// commands from the NewBank customer are processed in this method
 	public synchronized String processRequest(CustomerID customer, String request) {
+		String command;
+		if (request.contains(" ")){
+			command = request.substring(0, request.indexOf(" "));
+		} else {
+			command = request;
+		}
+
+		System.out.println("Command: " + command);
+
 		if(customers.containsKey(customer.getKey())) {
-			switch(request) {
+			switch(command) {
 			case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
+			case "MOVE" 		  : return transferFunds(customer, request);
 			default : return "FAIL";
 			}
 		}
@@ -57,6 +67,49 @@ public class NewBank {
 	
 	private String showMyAccounts(CustomerID customer) {
 		return (customers.get(customer.getKey())).accountsToString();
+	}
+
+	private String transferFunds(CustomerID customer, String request){
+
+		double amount = 0;
+		Account from = null;
+		Account to = null;
+
+		String[] words = request.split(" ");
+
+		for (int i = 0; i < words.length; i++){
+			if (i==0){
+				// ignore the command word
+				continue;
+			} else if (i==1){
+				amount = Double.valueOf(words[i]);
+				System.out.println("Amount: " + Double.toString(amount));
+			} else if (i==2){
+				from = findCustomerAccount(customer,words[i]);
+				System.out.println("From: " + words[i]);
+			} else if (i==3){
+				to = findCustomerAccount(customer,words[i]);
+				System.out.println("To: " + words[i]);
+			}
+		}
+
+		if (amount==0 || from==null || to==null){
+			System.out.println("Error: Request incomplete.");
+			return "FAIL";
+		}
+
+		if (from.withdraw(amount)){
+			to.deposit(amount);
+			return "SUCCESS";
+		} else {
+			return "FAIL";
+		}
+	}
+
+	private Account findCustomerAccount(CustomerID customer, String accountName){
+
+		return customers.get(customer.getKey()).getAccounts().get(accountName);
+
 	}
 
 }

@@ -10,7 +10,25 @@ public class Account {
 		this.accountName = accountName;
 		this.openingBalance = openingBalance;
 	}
-	
+
+	public void deposit(double amount) {
+		openingBalance = openingBalance + amount;
+	}
+
+	public boolean withdraw(double amount) {
+		if (openingBalance < amount) {
+			System.out.println("Insufficient funds in account");
+			return false;
+		}else {
+			openingBalance = openingBalance - amount;
+			return true;
+		}
+	}
+
+	public String getAccountName(){
+		return accountName;
+	}
+
 	public String toString() {
 		return (accountName + ": " + String.format("%.2f",openingBalance) + "\n");
 	}
