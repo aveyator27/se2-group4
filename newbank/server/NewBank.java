@@ -18,10 +18,12 @@ public class NewBank {
 		customers.put("Bhagy", bhagy);
 		
 		Customer christina = new Customer("Tina01");
+		christina.addAccount(new Account("Main",800.0));
 		christina.addAccount(new Account("Savings", 1500.0));
 		customers.put("Christina", christina);
 		
 		Customer john = new Customer("JohnDoe");
+		john.addAccount(new Account("Main",800.0));
 		john.addAccount(new Account("Checking", 250.0));
 		customers.put("John", john);
 
