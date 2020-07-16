@@ -47,6 +47,7 @@ public class NewBankClientHandler extends Thread {
                         //otherwise display error message
                     } else {
                         out.println("Error. Not registered. Please try again.");
+                        invalidChoice = true;
                     }
                     //for login
                 } else if (choice.equals("LOGIN")) {
