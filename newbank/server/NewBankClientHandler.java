@@ -22,7 +22,6 @@ public class NewBankClientHandler extends Thread {
     public void run() {
         // keep getting requests from the client and processing them
         try {
-            //ask if existing client
             CustomerID customer = null;
             boolean invalidChoice = true;
             while (invalidChoice) {
