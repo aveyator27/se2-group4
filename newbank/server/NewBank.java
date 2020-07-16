@@ -8,6 +8,9 @@ public class NewBank {
     private static final NewBank bank = new NewBank();
     private HashMap<String, Customer> customers;
 
+    private static final String successString = "SUCCESS";
+    private static final String failString = "FAIL";
+
     private NewBank() {
         customers = new HashMap<>();
         addTestData();
@@ -31,8 +34,14 @@ public class NewBank {
         Customer marc = new Customer("password");
         marc.addAccount(new Account("Main", 134));
         marc.addAccount(new Account("Savings", 89));
-        marc.addAccount(new Account("Secret Bottlecaps Stash", 1645));
+        marc.addAccount(new Account("BottlecapsStash", 1645));
         customers.put("Marc", marc);
+
+        Customer wayne = new Customer("1234");
+        wayne.addAccount(new Account("Main", 134));
+        wayne.addAccount(new Account("Savings", 89));
+        wayne.addAccount(new Account("testing", 1645));
+        customers.put("Wayne", wayne);
 
     }
 
@@ -78,14 +87,16 @@ public class NewBank {
                 case "SHOWMYACCOUNTS":
                     return showMyAccounts(customer);
                 case "MOVE":
-                    return transferFunds(customer, request);
+                    return moveFunds(customer, request);
                 case "HELP":
                     return showHelp();
+                case "PAY":
+                    return sendMoney(customer, request);
                 default:
-                    return "FAIL";
+                    return failString;
             }
         }
-        return "FAIL";
+        return failString;
     }
 
     /**
@@ -120,13 +131,66 @@ public class NewBank {
      * @return the string with the help message
      */
     private String showHelp() {
-        return ("Please select one of the following options: \n " +
-                "1) To view your accounts enter SHOWMYACCOUNTS \n " +
-                "2) To transfer funds, enter MOVE followed by the two account names and sum \n" +
-                "3) To exit this menu and close down the program, press EXIT");
+        return ("Please select one of the following options: \n" +
+                "1) To view your accounts enter SHOWMYACCOUNTS \n" +
+                "2) To transfer funds between your accounts, enter MOVE followed by the sum and then the two account names and sum. e.g. MOVE 10 Main Savings \n" +
+                "3) To pay others customers from your Main account to their Main account, enter PAY followed by that person's name and the amount. e.g. PAY John 100" +
+
+                "\n0) To exit this menu and close down the program, press EXIT \n"
+        );
     }
 
-    private String transferFunds(CustomerID customer, String request) {
+    private String sendMoney(CustomerID payerID, String request) {
+        String[] words = request.split(" ");
+        double amount = 0;
+        Customer payee = null;
+        Customer payer = customers.get(payerID.getKey());
+        if (payer==null){
+            System.out.println("Error: Payer not found");
+            return failString;
+        }
+
+        Account payeeMain = null;
+        Account payerMain = payer.getAccounts().get("Main");
+
+        if (payerMain == null ){
+            System.out.println("Error: Payer's Main Account not found.");
+            return failString;
+        }
+
+        for (int i = 0; i < words.length; i++) {
+            if (i == 0) {
+                continue;
+            } else if (i == 1) {
+                payee = customers.get(words[i]);
+                if (payee == null ){
+                    System.out.println("Error: Payee not found.");
+                    return failString;
+                }
+                payeeMain = payee.getAccounts().get("Main");
+                if (payeeMain == null ){
+                    System.out.println("Error: Payee's Main Account not found.");
+                    return failString;
+                }
+            } else if (i == 2) {
+                amount = Double.valueOf(words[i]);
+                if (amount <= 0){
+                    System.out.println("Amount must be greater than zero");
+                    return failString;
+                }
+            }
+        }
+
+        if (payerMain.withdraw(amount)) {
+            payeeMain.deposit(amount);
+            return successString;
+        } else {
+            return failString;
+        }
+    }
+
+
+    private String moveFunds(CustomerID customer, String request) {
 
         double amount = 0;
         Account from = null;
@@ -140,6 +204,10 @@ public class NewBank {
                 continue;
             } else if (i == 1) {
                 amount = Double.valueOf(words[i]);
+                if (amount <= 0){
+                    System.out.println("Amount must be greater than zero");
+                    return failString;
+                }
                 System.out.println("Amount: " + Double.toString(amount));
             } else if (i == 2) {
                 from = findCustomerAccount(customer, words[i]);
@@ -150,16 +218,16 @@ public class NewBank {
             }
         }
 
-        if (amount == 0 || from == null || to == null) {
+        if (from == null || to == null) {
             System.out.println("Error: Request incomplete.");
-            return "FAIL";
+            return failString;
         }
 
         if (from.withdraw(amount)) {
             to.deposit(amount);
-            return "SUCCESS";
+            return successString;
         } else {
-            return "FAIL";
+            return failString;
         }
     }
 
