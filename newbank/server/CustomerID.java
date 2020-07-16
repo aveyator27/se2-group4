@@ -11,4 +11,3 @@ public class CustomerID {
 		return key;
 	}
 }
-
