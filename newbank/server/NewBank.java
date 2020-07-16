@@ -55,7 +55,7 @@ public class NewBank {
     private boolean isExistingCustomer(String username) {
         AtomicBoolean isExisting = new AtomicBoolean(false);
         customers.forEach((s,cus) ->{
-            if(s.equals(username)){
+            if(s.toUpperCase().equals(username.toUpperCase())){
                 isExisting.set(true);
             }
         });
@@ -122,7 +122,7 @@ public class NewBank {
     private String showHelp() {
         return ("Please select one of the following options: \n " +
                 "1) To view your accounts enter SHOWMYACCOUNTS \n " +
-                "2) To transfer funds, enter MOVE followed by the two account names and sum \n +" +
+                "2) To transfer funds, enter MOVE followed by the two account names and sum \n" +
                 "3) To exit this menu and close down the program, press EXIT");
     }
 
