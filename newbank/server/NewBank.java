@@ -136,7 +136,7 @@ public class NewBank {
                 "2) To transfer funds between your accounts, enter MOVE followed by the sum and then the two account names and sum. e.g. MOVE 10 Main Savings \n" +
                 "3) To pay others customers from your Main account to their Main account, enter PAY followed by that person's name and the amount. e.g. PAY John 100" +
 
-                "\n0) To exit this menu and close down the program, press EXIT \n"
+                "\n0) To exit this menu and close down the program, enter EXIT \n"
         );
     }
 
