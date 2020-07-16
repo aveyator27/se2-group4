@@ -22,7 +22,6 @@ public class NewBankClientHandler extends Thread {
     public void run() {
         // keep getting requests from the client and processing them
         try {
-            //ask if existing client
             CustomerID customer = null;
             boolean invalidChoice = true;
             while (invalidChoice) {
@@ -47,6 +46,7 @@ public class NewBankClientHandler extends Thread {
                         //otherwise display error message
                     } else {
                         out.println("Error. Not registered. Please try again.");
+                        invalidChoice = true;
                     }
                     //for login
                 } else if (choice.equals("LOGIN")) {

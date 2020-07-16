@@ -1,6 +1,7 @@
 package newbank.server;
 
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NewBank {
 
@@ -46,6 +47,21 @@ public class NewBank {
         return null;
     }
 
+    /**
+     * checks whether a particular username has already been used
+     * @param username is the username to check
+     * @return whether it has been used already
+     */
+    private boolean isExistingCustomer(String username) {
+        AtomicBoolean isExisting = new AtomicBoolean(false);
+        customers.forEach((s,cus) ->{
+            if(s.toUpperCase().equals(username.toUpperCase())){
+                isExisting.set(true);
+            }
+        });
+        return (isExisting.get());
+    }
+
     // commands from the NewBank customer are processed in this method
     public synchronized String processRequest(CustomerID customer, String request) {
         String command;
@@ -83,8 +99,12 @@ public class NewBank {
         try {
             Customer customer = new Customer(password);
             customer.addAccount(new Account("Main", 0.0));
-            customers.put(userName, customer);
-            return true;
+            if(isExistingCustomer(userName)){
+                return false;
+            } else {
+                customers.put(userName, customer);
+                return true;
+            }
         } catch (Error e) {
             return false;
         }
@@ -102,7 +122,7 @@ public class NewBank {
     private String showHelp() {
         return ("Please select one of the following options: \n " +
                 "1) To view your accounts enter SHOWMYACCOUNTS \n " +
-                "2) To transfer funds, enter MOVE followed by the two account names and sum \n +" +
+                "2) To transfer funds, enter MOVE followed by the two account names and sum \n" +
                 "3) To exit this menu and close down the program, press EXIT");
     }
 
