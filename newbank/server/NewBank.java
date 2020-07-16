@@ -79,7 +79,7 @@ public class NewBank {
      * @param password is the user's chosen password
      * @return whether account was successfully created
      */
-    public synchronized boolean createAccount(String userName, String password) {
+    public synchronized boolean createCustomer(String userName, String password) {
         try {
             Customer customer = new Customer(password);
             customer.addAccount(new Account("Main", 0.0));
@@ -102,7 +102,8 @@ public class NewBank {
     private String showHelp() {
         return ("Please select one of the following options: \n " +
                 "1) To view your accounts enter SHOWMYACCOUNTS \n " +
-                "2) To transfer funds, enter MOVE followed by the two account names and sum");
+                "2) To transfer funds, enter MOVE followed by the two account names and sum \n +" +
+                "3) To exit this menu and close down the program, press EXIT");
     }
 
     private String transferFunds(CustomerID customer, String request) {

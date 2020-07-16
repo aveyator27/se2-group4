@@ -24,7 +24,7 @@ public class NewBankClientHandler extends Thread {
         try {
             //ask if existing client
             CustomerID customer = null;
-            Boolean invalidChoice = true;
+            boolean invalidChoice = true;
             while (invalidChoice) {
                 //ask client whether they want to register or login
                 out.println("To register please enter REGISTER. \nTo login please enter LOGIN.");
@@ -39,7 +39,7 @@ public class NewBankClientHandler extends Thread {
                     out.println("Enter Password");
                     String password = in.readLine();
                     //create the account
-                    Boolean regSuccess = bank.createAccount(userName, password);
+                    boolean regSuccess = bank.createCustomer(userName, password);
                     //if registered, automatically authenticate user and login
                     if (regSuccess) {
                         customer = bank.checkLogInDetails(userName, password);
