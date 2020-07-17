@@ -113,7 +113,14 @@ public class NewBank {
 		return customers.get(customer.getKey()).getAccounts().get(accountName);
 
 	}
-if (customers.get(customer.getKey()).getAccounts().get(Account(accountName)).containsKey(words[1])) {
+	
+	
+	private String newAccount (CustomerID customer, String request) {
+		
+    	String[] words = request.split(" ");
+        
+        
+		if (customers.get(customer.getKey()).getAccounts().get(Account(accountName)).containsKey(words[1])) {
             return "FAIL";
 		} else {
     		for (int i = 0; i < words.length; i++){
@@ -136,5 +143,4 @@ if (customers.get(customer.getKey()).getAccounts().get(Account(accountName)).con
     	}
     
     
-}
 }
