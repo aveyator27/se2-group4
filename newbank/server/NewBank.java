@@ -113,5 +113,28 @@ public class NewBank {
 		return customers.get(customer.getKey()).getAccounts().get(accountName);
 
 	}
-
+if (customers.get(customer.getKey()).getAccounts().get(Account(accountName)).containsKey(words[1])) {
+            return "FAIL";
+		} else {
+    		for (int i = 0; i < words.length; i++){
+    			if (i==0){
+    				// ignore the command word
+    				continue;
+    			} else if (i==1){
+    				customers.get(customer.getKey()).addAccount(new Account((words[1]),0));
+    				// Return second word from split string 
+    				return "SUCCESS";
+    			} else if (i>=2){
+    				System.out.println("Account name must only contain one word");
+    				return "FAIL";
+    			}
+    		}
+		}
+    		return "FAIL";
+    		
+    		
+    	}
+    
+    
+}
 }
