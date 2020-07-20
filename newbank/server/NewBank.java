@@ -92,6 +92,8 @@ public class NewBank {
                     return showHelp();
                 case "PAY":
                     return sendMoney(customer, request);
+                case "NEWACCOUNT":
+                    return newAccount(customer,request);
                 default:
                     return failString;
             }
@@ -231,38 +233,51 @@ public class NewBank {
         }
     }
 
-    private Account findCustomerAccount(CustomerID customer, String accountName) {
+    private Account findCustomerAccount(CustomerID customerID, String accountName) {
 
-        return customers.get(customer.getKey()).getAccounts().get(accountName);
+        Customer customer = customers.get(customerID.getKey());
+
+        if (customer==null){
+            return null;
+        } else {
+            return customer.getAccounts().get(accountName);
+        }
 
     }
 
-	private String newAccount (CustomerID customer, String request) {
+	private String newAccount (CustomerID customerID, String request) {
 		
     	String[] words = request.split(" ");
-    	double amount = 0;
-        
-	//	if (customers.get(customer.getKey()).getAccounts().getaccountName).containsKey(words[1])) {
-      //      return "FAIL";
-	//	} else {
-    		for (int i = 0; i < words.length; i++){
-    			if (i==0){
-    				// ignore the command word
-    				continue;
-    			} else if (i==1){
+
+    	for (int i = 0; i < words.length; i++){
+
+    	    if (i==0){
+    	        // ignore the command word
+                continue;
+    	    } else if (i==1){
+
+                // Second word from split string is accountName
+    	        String accountName = words[i];
+
+    	        System.out.println("New Account Name: " + accountName);
+
+    	        Customer customer = customers.get(customerID.getKey());
     				
-    				customers.get(customer.getKey()).addAccount(new Account(words[i],amount));
-    				// Return second word from split string 
-    				return "SUCCESS";
-    			} else if (i>=2){
-    				System.out.println("Account name must only contain one word");
-    				return "FAIL";
-    			}
-    		}
-	//	}
-			return "FAIL";
-    	
-    		
-    		
+    	        if (customer.getAccounts().get(accountName)==null){
+    	            customer.addAccount(new Account(accountName, 0));
+
+    	            return successString;
+
+    	        } else {
+    	            return failString;
+    	        }
+
+    	    } else if (i>=2){
+    	        System.out.println("Account name must only contain one word");
+    	        return failString;
+    	    }
     	}
+
+    	return failString;
+    }
 }
