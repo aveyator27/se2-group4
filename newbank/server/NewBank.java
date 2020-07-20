@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NewBank {
-
+  
     private static final NewBank bank = new NewBank();
     private HashMap<String, Customer> customers;
 
@@ -237,4 +237,32 @@ public class NewBank {
 
     }
 
+	private String newAccount (CustomerID customer, String request) {
+		
+    	String[] words = request.split(" ");
+    	double amount = 0;
+        
+	//	if (customers.get(customer.getKey()).getAccounts().getaccountName).containsKey(words[1])) {
+      //      return "FAIL";
+	//	} else {
+    		for (int i = 0; i < words.length; i++){
+    			if (i==0){
+    				// ignore the command word
+    				continue;
+    			} else if (i==1){
+    				
+    				customers.get(customer.getKey()).addAccount(new Account(words[i],amount));
+    				// Return second word from split string 
+    				return "SUCCESS";
+    			} else if (i>=2){
+    				System.out.println("Account name must only contain one word");
+    				return "FAIL";
+    			}
+    		}
+	//	}
+			return "FAIL";
+    	
+    		
+    		
+    	}
 }
