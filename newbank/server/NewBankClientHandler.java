@@ -22,7 +22,7 @@ public class NewBankClientHandler extends Thread {
     public void run() {
         // keep getting requests from the client and processing them
         try {
-            CustomerID customer = null;
+            UserID user = null;
             boolean invalidChoice = true;
             while (invalidChoice) {
                 //ask client whether they want to register or login
@@ -41,7 +41,7 @@ public class NewBankClientHandler extends Thread {
                     boolean regSuccess = bank.createCustomer(userName, password);
                     //if registered, automatically authenticate user and login
                     if (regSuccess) {
-                        customer = bank.checkLogInDetails(userName, password);
+                        user = bank.checkLogInDetails(userName, password);
                         out.println("Successfully registered.");
                         //otherwise display error message
                     } else {
@@ -59,14 +59,14 @@ public class NewBankClientHandler extends Thread {
                     String password = in.readLine();
                     out.println("Checking Details...");
                     // authenticate user and get customer ID token from bank for use in subsequent requests
-                    customer = bank.checkLogInDetails(userName, password);
+                    user = bank.checkLogInDetails(userName, password);
                     //if no valid menu option was selected
                 } else {
                     out.println("Invalid choice. Please try again.");
                 }
             }
             // if the user is authenticated then get requests from the user and process them
-            if (customer != null) {
+            if (user != null) {
                 out.println("Log In Successful. What do you want to do?");
                 while (true) {
                     String request = in.readLine();
@@ -75,8 +75,8 @@ public class NewBankClientHandler extends Thread {
                         break;
                     } else {
                         //otherwise, any other command is processed
-                        System.out.println("Request from " + customer.getKey());
-                        String response = bank.processRequest(customer, request);
+                        System.out.println("Request from " + user.getKey());
+                        String response = bank.processRequest(user, request);
                         out.println(response);
                     }
                 }
