@@ -1,57 +1,66 @@
 package newbank.server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NewBank {
   
     private static final NewBank bank = new NewBank();
-    private HashMap<String, Customer> customers;
+    //private HashMap<String, Customer> customers;
+    //private HashMap<String, Admin> admins;
+    private HashMap<String, User> users;
 
     private static final String successString = "SUCCESS";
     private static final String failString = "FAIL";
 
     private NewBank() {
-        customers = new HashMap<>();
+        //customers = new HashMap<>();
+        //admins = new HashMap<>();
+        users = new HashMap<>();
         addTestData();
     }
 
     private void addTestData() {
         Customer bhagy = new Customer("1234");
         bhagy.addAccount(new Account("Main", 1000.0));
-        customers.put("Bhagy", bhagy);
+        users.put("Bhagy", bhagy);
 
         Customer christina = new Customer("Tina01");
         christina.addAccount(new Account("Main", 800.0));
         christina.addAccount(new Account("Savings", 1500.0));
-        customers.put("Christina", christina);
+        users.put("Christina", christina);
 
         Customer john = new Customer("JohnDoe");
         john.addAccount(new Account("Main", 800.0));
         john.addAccount(new Account("Checking", 250.0));
-        customers.put("John", john);
+        users.put("John", john);
 
         Customer marc = new Customer("password");
         marc.addAccount(new Account("Main", 134));
         marc.addAccount(new Account("Savings", 89));
         marc.addAccount(new Account("BottlecapsStash", 1645));
-        customers.put("Marc", marc);
+       users.put("Marc", marc);
 
         Customer wayne = new Customer("1234");
         wayne.addAccount(new Account("Main", 134));
         wayne.addAccount(new Account("Savings", 89));
         wayne.addAccount(new Account("testing", 1645));
-        customers.put("Wayne", wayne);
+        users.put("Wayne", wayne);
 
+        Admin admin = new Admin("1234");
+        users.put("Admin", admin);
+        Admin mel = new Admin("mel");
+        users.put("Mel", mel);
     }
 
     public static NewBank getBank() {
         return bank;
     }
 
-    public synchronized CustomerID checkLogInDetails(String userName, String password) {
-        if (customers.containsKey(userName) && password.equals(customers.get(userName).getPassword())) {
-            return new CustomerID(userName);
+    public synchronized UserID checkLogInDetails(String userName, String password) {
+        if ((users.containsKey(userName) && password.equals(users.get(userName).getPassword()))) {
+            return new UserID(userName);
         }
         return null;
     }
@@ -61,9 +70,9 @@ public class NewBank {
      * @param username is the username to check
      * @return whether it has been used already
      */
-    private boolean isExistingCustomer(String username) {
+    private boolean isExistingUser(String username) {
         AtomicBoolean isExisting = new AtomicBoolean(false);
-        customers.forEach((s,cus) ->{
+        users.forEach((s,cus) ->{
             if(s.toUpperCase().equals(username.toUpperCase())){
                 isExisting.set(true);
             }
@@ -71,8 +80,8 @@ public class NewBank {
         return (isExisting.get());
     }
 
-    // commands from the NewBank customer are processed in this method
-    public synchronized String processRequest(CustomerID customer, String request) {
+    // commands from the NewBank customers and admins are processed in this method
+    public synchronized String processRequest(UserID customer, String request) {
         String command;
         if (request.contains(" ")) {
             command = request.substring(0, request.indexOf(" "));
@@ -82,14 +91,15 @@ public class NewBank {
 
         System.out.println("Command: " + command);
 
-        if (customers.containsKey(customer.getKey())) {
+        if (users.containsKey(customer.getKey())&&users.get(customer.getKey()).userType.equals("customer")) {
+            //if customer show customer menu
             switch (command) {
                 case "SHOWMYACCOUNTS":
                     return showMyAccounts(customer);
                 case "MOVE":
                     return moveFunds(customer, request);
                 case "HELP":
-                    return showHelp();
+                    return showCustomerHelp();
                 case "PAY":
                     return sendMoney(customer, request);
                 case "NEWACCOUNT":
@@ -97,6 +107,19 @@ public class NewBank {
                 default:
                     return failString;
             }
+        } else if (users.containsKey(customer.getKey())&&users.get(customer.getKey()).userType.equals("admin")){
+            //if admin show different menu
+            switch (command) {
+                case "SHOWCUSTOMERS":
+                    return showAllCustomers();
+                case "SHOWSTATEMENT":
+                   return showCustomerStatement(customer, request);
+                case "HELP":
+                    return showAdminHelp();
+                default:
+                    return failString;
+            }
+
         }
         return failString;
     }
@@ -112,10 +135,10 @@ public class NewBank {
         try {
             Customer customer = new Customer(password);
             customer.addAccount(new Account("Main", 0.0));
-            if(isExistingCustomer(userName)){
+            if(isExistingUser(userName)){
                 return false;
             } else {
-                customers.put(userName, customer);
+                users.put(userName, customer);
                 return true;
             }
         } catch (Error e) {
@@ -123,8 +146,36 @@ public class NewBank {
         }
     }
 
-    private String showMyAccounts(CustomerID customer) {
-        return (customers.get(customer.getKey())).accountsToString();
+    private String showAllCustomers(){
+        ArrayList<Customer> customers = new ArrayList<Customer>();
+        ArrayList<String> names = new ArrayList<>();
+        String allAccounts = "";
+        users.forEach((s,curUser) ->{
+            if(curUser.userType.equals("customer")){
+                names.add(s);
+                customers.add((Customer) curUser);
+            }
+        });
+        int id = 0;
+        for (String name : names) {
+                allAccounts = allAccounts + "\n" + name + ":" + "\n" + customers.get(id).accountsToString();
+                id++;
+        }
+            return allAccounts;
+    }
+
+    private String showAllAccounts(ArrayList<String> names, ArrayList<Customer> customers){
+        String allAccounts = "";
+        int id = 0;
+        for(String name: names){
+            allAccounts = allAccounts+"\n"+name+":"+"\n" + customers.get(id).accountsToString();
+            id++;
+        }
+        return allAccounts;
+    }
+
+    private String showMyAccounts(UserID customer) {
+        return (users.get(customer.getKey())).accountsToString();
     }
 
     /**
@@ -132,7 +183,7 @@ public class NewBank {
      *
      * @return the string with the help message
      */
-    private String showHelp() {
+    private String showCustomerHelp() {
         return ("Please select one of the following options: \n" +
                 "1) To view your accounts enter SHOWMYACCOUNTS \n" +
                 "2) To transfer funds between your accounts, enter MOVE followed by the sum and then the two account names and sum. e.g. MOVE 10 Main Savings \n" +
@@ -142,11 +193,25 @@ public class NewBank {
         );
     }
 
-    private String sendMoney(CustomerID payerID, String request) {
+    /**
+     * creates a help message for a admin user
+     *
+     * @return the string with the help message
+     */
+    private String showAdminHelp() {
+        return ("Please select one of the following options: \n" +
+                "1) To view all customers enter SHOWCUSTOMERS \n" +
+                "2) To generate a statement for a customer enter SHOWSTATEMENT followed by their name, e.g. SHOWSTATEMENT Bhagy \n" +
+
+                "\n0) To exit this menu and close down the program, enter EXIT \n"
+        );
+    }
+
+    private String sendMoney(UserID payerID, String request) {
         String[] words = request.split(" ");
         double amount = 0;
         Customer payee = null;
-        Customer payer = customers.get(payerID.getKey());
+        Customer payer = (Customer) users.get(payerID.getKey());
         if (payer==null){
             System.out.println("Error: Payer not found");
             return failString;
@@ -164,7 +229,7 @@ public class NewBank {
             if (i == 0) {
                 continue;
             } else if (i == 1) {
-                payee = customers.get(words[i]);
+                payee = (Customer) users.get(words[i]);
                 if (payee == null ){
                     System.out.println("Error: Payee not found.");
                     return failString;
@@ -191,8 +256,27 @@ public class NewBank {
         }
     }
 
+    private String showCustomerStatement(UserID user, String request) {
+        String userName = null;
+        String[] words = request.split(" ");
 
-    private String moveFunds(CustomerID customer, String request) {
+        for (int i = 0; i < words.length; i++) {
+            if (i == 0) {
+                // ignore the command word
+                continue;
+            } else if (i == 1) {
+                if (users.containsKey(words[1])) {
+                    System.out.println("User identified");
+                    return (users.get(words[1]).accountsToString());
+                }
+            }
+        }
+            return failString;
+        //}
+    }
+
+
+    private String moveFunds(UserID customer, String request) {
 
         double amount = 0;
         Account from = null;
@@ -233,9 +317,9 @@ public class NewBank {
         }
     }
 
-    private Account findCustomerAccount(CustomerID customerID, String accountName) {
+    private Account findCustomerAccount(UserID customerID, String accountName) {
 
-        Customer customer = customers.get(customerID.getKey());
+        Customer customer = (Customer) users.get(customerID.getKey());
 
         if (customer==null){
             return null;
@@ -245,7 +329,7 @@ public class NewBank {
 
     }
 
-	private String newAccount (CustomerID customerID, String request) {
+	private String newAccount (UserID customerID, String request) {
 		
     	String[] words = request.split(" ");
 
@@ -261,7 +345,7 @@ public class NewBank {
 
     	        System.out.println("New Account Name: " + accountName);
 
-    	        Customer customer = customers.get(customerID.getKey());
+    	        Customer customer = (Customer) users.get(customerID.getKey());
     				
     	        if (customer.getAccounts().get(accountName)==null){
     	            customer.addAccount(new Account(accountName, 0));
