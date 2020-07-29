@@ -2,10 +2,13 @@ package newbank.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
+import java.io.PrintWriter;
 
 public class NewBank {
-  
+
     private static final NewBank bank = new NewBank();
     //private HashMap<String, Customer> customers;
     //private HashMap<String, Admin> admins;
@@ -25,22 +28,32 @@ public class NewBank {
         Customer bhagy = new Customer("1234");
         bhagy.addAccount(new Account("Main", 1000.0));
         users.put("Bhagy", bhagy);
+     //    Database.insertCustomer("Bhagy", "1234");
+    //   Database.showCustomerAccounts("Christina");
+
 
         Customer christina = new Customer("Tina01");
         christina.addAccount(new Account("Main", 800.0));
         christina.addAccount(new Account("Savings", 1500.0));
+    //   Database.insertAccount(0.00, "Main", "Christina");
+     //   Database.insertAccount(1500.00, "Savings", "Christina");
         users.put("Christina", christina);
+       //    Database.insertCustomer("Christina", "Tina01");
+        //   Database.findCustomerUsername("Christina");
 
         Customer john = new Customer("JohnDoe");
         john.addAccount(new Account("Main", 800.0));
         john.addAccount(new Account("Checking", 250.0));
         users.put("John", john);
-
+        //     Database.insertAccount(0.00, "Main", "JohnDoe");
+        //   Database.deleteAccount("JohnDoe", "Main");
         Customer marc = new Customer("password");
         marc.addAccount(new Account("Main", 134));
         marc.addAccount(new Account("Savings", 89));
         marc.addAccount(new Account("BottlecapsStash", 1645));
-       users.put("Marc", marc);
+        users.put("Marc", marc);
+        //   Database.insertAccount(0.00, "Main","Marc");
+     //   Database.deleteAccount("Marc","Main");
 
         Customer wayne = new Customer("1234");
         wayne.addAccount(new Account("Main", 134));
@@ -59,9 +72,17 @@ public class NewBank {
     }
 
     public synchronized UserID checkLogInDetails(String userName, String password) {
-        if ((users.containsKey(userName) && password.equals(users.get(userName).getPassword()))) {
+        if (Database.findCustomerUsername(userName) != null){
+            System.out.println(Database.findCustomerUsername(userName));
+            if (Database.findCustomerPassword(userName).equals(password)){
+                return new UserID(userName);
+            }
+
+        }
+      /*  if ((users.containsKey(userName) && password.equals(users.get(userName).getPassword()))) {
             return new UserID(userName);
         }
+        return null;*/
         return null;
     }
 
@@ -113,7 +134,7 @@ public class NewBank {
                 case "SHOWCUSTOMERS":
                     return showAllCustomers();
                 case "SHOWSTATEMENT":
-                   return showCustomerStatement(customer, request);
+                    return showCustomerStatement(customer, request);
                 case "HELP":
                     return showAdminHelp();
                 default:
@@ -131,19 +152,56 @@ public class NewBank {
      * @param password is the user's chosen password
      * @return whether account was successfully created
      */
-    public synchronized boolean createCustomer(String userName, String password) {
+    public synchronized boolean createCustomer(String userName, String password, String passwordRepeat) {
         try {
-            Customer customer = new Customer(password);
-            customer.addAccount(new Account("Main", 0.0));
-            if(isExistingUser(userName)){
-                return false;
-            } else {
-                users.put(userName, customer);
-                return true;
+            boolean validPassword = true;
+            List<String> errorList = new ArrayList<String>();
+            Pattern specialCharPatten = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+            Pattern UpperCasePatten = Pattern.compile("[A-Z ]");
+            Pattern lowerCasePatten = Pattern.compile("[a-z ]");
+            Pattern digitCasePatten = Pattern.compile("[0-9 ]");
+            if (!password.equals(passwordRepeat)) {
+                errorList.add("Passwords do not match.");
+                validPassword = false;
             }
-        } catch (Error e) {
-            return false;
+            if (password.length() < 8) {
+                errorList.add("Password length must contain at least eight characters.");
+                validPassword = false;
+
+            }
+            if (!specialCharPatten.matcher(password).find()) {
+                errorList.add("The password must contain at least one special character.");
+                validPassword = false;
+            }
+            if (!UpperCasePatten.matcher(password).find()) {
+                errorList.add("The password must contain at least one upper case character.");
+                validPassword = false;
+            }
+            if (!lowerCasePatten.matcher(password).find()) {
+                errorList.add("The password must contain at least one lower case character.");
+                validPassword = false;
+            }
+            if (!digitCasePatten.matcher(password).find()) {
+                errorList.add("The password must contain at least one digit 0-9.");
+                validPassword = false;
+            }
+
+            if (validPassword) {
+                Customer customer = new Customer(password);
+                customer.addAccount(new Account("Main", 0.0));
+                if (isExistingUser(userName)) {
+                    return false;
+                } else {
+                    users.put(userName, customer);
+                    return true;
+                }
+            }
+            System.out.println(errorList);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
     private String showAllCustomers(){
@@ -158,10 +216,10 @@ public class NewBank {
         });
         int id = 0;
         for (String name : names) {
-                allAccounts = allAccounts + "\n" + name + ":" + "\n" + customers.get(id).accountsToString();
-                id++;
+            allAccounts = allAccounts + "\n" + name + ":" + "\n" + customers.get(id).accountsToString();
+            id++;
         }
-            return allAccounts;
+        return allAccounts;
     }
 
     private String showAllAccounts(ArrayList<String> names, ArrayList<Customer> customers){
@@ -271,7 +329,7 @@ public class NewBank {
                 }
             }
         }
-            return failString;
+        return failString;
         //}
     }
 
@@ -329,39 +387,39 @@ public class NewBank {
 
     }
 
-	private String newAccount (UserID customerID, String request) {
-		
-    	String[] words = request.split(" ");
+    private String newAccount (UserID customerID, String request) {
 
-    	for (int i = 0; i < words.length; i++){
+        String[] words = request.split(" ");
 
-    	    if (i==0){
-    	        // ignore the command word
+        for (int i = 0; i < words.length; i++){
+
+            if (i==0){
+                // ignore the command word
                 continue;
-    	    } else if (i==1){
+            } else if (i==1){
 
                 // Second word from split string is accountName
-    	        String accountName = words[i];
+                String accountName = words[i];
 
-    	        System.out.println("New Account Name: " + accountName);
+                System.out.println("New Account Name: " + accountName);
 
-    	        Customer customer = (Customer) users.get(customerID.getKey());
-    				
-    	        if (customer.getAccounts().get(accountName)==null){
-    	            customer.addAccount(new Account(accountName, 0));
+                Customer customer = (Customer) users.get(customerID.getKey());
 
-    	            return successString;
+                if (customer.getAccounts().get(accountName)==null){
+                    customer.addAccount(new Account(accountName, 0));
 
-    	        } else {
-    	            return failString;
-    	        }
+                    return successString;
 
-    	    } else if (i>=2){
-    	        System.out.println("Account name must only contain one word");
-    	        return failString;
-    	    }
-    	}
+                } else {
+                    return failString;
+                }
 
-    	return failString;
+            } else if (i>=2){
+                System.out.println("Account name must only contain one word");
+                return failString;
+            }
+        }
+
+        return failString;
     }
 }
