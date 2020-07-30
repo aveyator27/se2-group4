@@ -17,7 +17,7 @@ public class Database {
         Connection conn = null;
         try {                // "jdbc:sqlite:/Users/samueljewell/NewBanklatest11/db/bankDatabase.db"
             // db parameters
-            String url = "jdbc:sqlite:db/bankDatabase.db";
+           String url = "jdbc:sqlite:bankDatabase.db";
             // create a connection to the database
             conn = DriverManager.getConnection(url);
             if (conn != null) {

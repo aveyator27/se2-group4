@@ -92,13 +92,19 @@ public class NewBank {
      * @return whether it has been used already
      */
     private boolean isExistingUser(String username) {
-        AtomicBoolean isExisting = new AtomicBoolean(false);
+        Boolean isExisting = false;
+        if (Database.findCustomerUsername(username)!=null){
+            isExisting = true;
+        }
+        return isExisting;
+        /* pre Database code:
+         AtomicBoolean isExisting = new AtomicBoolean(false);
         users.forEach((s,cus) ->{
             if(s.toUpperCase().equals(username.toUpperCase())){
                 isExisting.set(true);
             }
         });
-        return (isExisting.get());
+        return (isExisting.get());*/
     }
 
     // commands from the NewBank customers and admins are processed in this method
@@ -189,10 +195,13 @@ public class NewBank {
             if (validPassword) {
                 Customer customer = new Customer(password);
                 customer.addAccount(new Account("Main", 0.0));
+
                 if (isExistingUser(userName)) {
                     return false;
                 } else {
-                    users.put(userName, customer);
+                    Database.insertCustomer(userName, password);
+                    Database.insertAccount(0.0, "Main", userName);
+                    //users.put(userName, customer);
                     return true;
                 }
             }
