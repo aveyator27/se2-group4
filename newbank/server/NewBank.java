@@ -79,7 +79,7 @@ public class NewBank {
             }
 
         }
-      /*  if ((users.containsKey(userName) && password.equals(users.get(userName).getPassword()))) {
+      /* pre database code if ((users.containsKey(userName) && password.equals(users.get(userName).getPassword()))) {
             return new UserID(userName);
         }
         return null;*/
@@ -214,7 +214,8 @@ public class NewBank {
     }
 
     private String showAllCustomers(){
-        ArrayList<Customer> customers = new ArrayList<Customer>();
+
+     /*  ArrayList<Customer> customers = new ArrayList<Customer>();
         ArrayList<String> names = new ArrayList<>();
         String allAccounts = "";
         users.forEach((s,curUser) ->{
@@ -229,6 +230,8 @@ public class NewBank {
             id++;
         }
         return allAccounts;
+        */
+        return Database.showAllCustomers();
     }
 
     private String showAllAccounts(ArrayList<String> names, ArrayList<Customer> customers){
@@ -240,13 +243,14 @@ public class NewBank {
             id++;
         }
         return allAccounts;
+
     }
 
     private String showMyAccounts(UserID customer) {
         return Database.showCustomerAccounts(customer.getKey());
         // pre database code
-  //       System.out.println(users.get(customer.getKey()).accountString);
-  //       return (users.get(customer.getKey())).accountsToString();
+        //       System.out.println(users.get(customer.getKey()).accountString);
+        //       return (users.get(customer.getKey())).accountsToString();
     }
 
     /**
