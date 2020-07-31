@@ -41,6 +41,19 @@ public class Database {
             System.out.println(e.getMessage());
         }
     }
+    public static void insertAdmin(String username, String password) {
+        String sql = "INSERT INTO admin(username, password, userType) values(?, ?, ?)";
+        try {
+            Connection conn = Database.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            pstmt.setString(2, "admin");
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     public static void insertAccount(double openingBalance, String accountName, String owner) {
         String sql = "INSERT INTO accounts(openingBalance, accountName, owner) values(?, ?, ?)";
@@ -67,8 +80,8 @@ public class Database {
             // loop through the result set
             String customers = "";
             while (rs.next()) {
-                customers += "username"+(rs.getInt("username") + "\t" +
-                         "password"+ rs.getString("password")) + "\n";
+                customers += "username :"+(rs.getString("username") + ": " +
+                         "password"+ ": " + rs.getString("password")) +"\n";
             }
             return customers;
         } catch (SQLException e) {
