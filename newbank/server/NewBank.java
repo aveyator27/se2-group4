@@ -244,6 +244,7 @@ public class NewBank {
 
     private String showMyAccounts(UserID customer) {
         return Database.showCustomerAccounts(customer.getKey());
+        // pre database code
   //       System.out.println(users.get(customer.getKey()).accountString);
   //       return (users.get(customer.getKey())).accountsToString();
     }
