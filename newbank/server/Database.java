@@ -56,7 +56,7 @@ public class Database {
         }
     }
 
-    public static void selectAllCustomers() {
+    public static String showAllCustomers() {
         String sql = "SELECT * FROM customers";
 
         try {
@@ -65,13 +65,16 @@ public class Database {
             ResultSet rs = stmt.executeQuery(sql);
 
             // loop through the result set
+            String customers = "";
             while (rs.next()) {
-                System.out.println(rs.getInt("username") + "\t" +
-                        rs.getString("password"));
+                customers += "username"+(rs.getInt("username") + "\t" +
+                         "password"+ rs.getString("password")) + "\n";
             }
+            return customers;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        return null;
     }
 
     public static void selectAllAccounts() {
@@ -103,7 +106,7 @@ public class Database {
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1,accountName);
             ResultSet rs  = pstmt.executeQuery();
-           // conn.close();
+            // conn.close();
             // loop through the result set
             String allAccounts = "";
          /*   while (rs.next()) {
@@ -112,21 +115,14 @@ public class Database {
                         rs.getString("owner"));
             }*/
             while (rs.next()){
-                allAccounts += rs.getString("accountName") + ": " 
-                        + rs.getDouble("openingBalance") + ": " 
+                allAccounts += rs.getString("accountName") + ": "
+                        + rs.getDouble("openingBalance") + ": "
                         + rs.getString("owner") + "\n";
             }
             return allAccounts;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
-     /*   for(String name: names){
-            allAccounts = allAccounts+"\n"+name+":"+"\n" + customers.get(id).accountsToString();
-            id++;
-        }*/
-
-
         return null;
 
     }
