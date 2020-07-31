@@ -17,7 +17,7 @@ public class Database {
         Connection conn = null;
         try {                // "jdbc:sqlite:/Users/samueljewell/NewBanklatest11/db/bankDatabase.db"
             // db parameters
-           String url = "jdbc:sqlite:bankDatabase.db";
+            String url = "jdbc:sqlite:db/bankDatabase.db";      // jdbc:sqlite:bankDatabase.db  // jdbc:sqlite:db/bankDatabase.db
             // create a connection to the database
             conn = DriverManager.getConnection(url);
             if (conn != null) {
@@ -95,7 +95,7 @@ public class Database {
 
     }
 
-    public static void showCustomerAccounts(String accountName) {
+    public static String showCustomerAccounts(String accountName) {
         String sql = "SELECT * FROM accounts WHERE owner = ?";
 
         try {
@@ -105,15 +105,29 @@ public class Database {
             ResultSet rs  = pstmt.executeQuery();
            // conn.close();
             // loop through the result set
-            while (rs.next()) {
+            String allAccounts = "";
+         /*   while (rs.next()) {
                 System.out.println(rs.getDouble("openingBalance") + "|" +
                         rs.getString("accountName") + "|" +
                         rs.getString("owner"));
+            }*/
+            while (rs.next()){
+                allAccounts += rs.getString("accountName") + ": " 
+                        + rs.getDouble("openingBalance") + ": " 
+                        + rs.getString("owner") + "\n";
             }
+            return allAccounts;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
+     /*   for(String name: names){
+            allAccounts = allAccounts+"\n"+name+":"+"\n" + customers.get(id).accountsToString();
+            id++;
+        }*/
+
+
+        return null;
 
     }
 
@@ -169,6 +183,5 @@ public class Database {
         return null;
     }
 }
-
 
 
