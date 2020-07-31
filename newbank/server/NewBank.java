@@ -28,17 +28,17 @@ public class NewBank {
         Customer bhagy = new Customer("1234");
         bhagy.addAccount(new Account("Main", 1000.0));
         users.put("Bhagy", bhagy);
-     //    Database.insertCustomer("Bhagy", "1234");
-    //   Database.showCustomerAccounts("Christina");
+        //    Database.insertCustomer("Bhagy", "1234");
+        //   Database.showCustomerAccounts("Christina");
 
 
         Customer christina = new Customer("Tina01");
         christina.addAccount(new Account("Main", 800.0));
         christina.addAccount(new Account("Savings", 1500.0));
-    //   Database.insertAccount(0.00, "Main", "Christina");
-     //   Database.insertAccount(1500.00, "Savings", "Christina");
+        //   Database.insertAccount(0.00, "Main", "Christina");
+        //   Database.insertAccount(1500.00, "Savings", "Christina");
         users.put("Christina", christina);
-       //    Database.insertCustomer("Christina", "Tina01");
+        //    Database.insertCustomer("Christina", "Tina01");
         //   Database.findCustomerUsername("Christina");
 
         Customer john = new Customer("JohnDoe");
@@ -53,7 +53,7 @@ public class NewBank {
         marc.addAccount(new Account("BottlecapsStash", 1645));
         users.put("Marc", marc);
         //   Database.insertAccount(0.00, "Main","Marc");
-     //   Database.deleteAccount("Marc","Main");
+        //   Database.deleteAccount("Marc","Main");
 
         Customer wayne = new Customer("1234");
         wayne.addAccount(new Account("Main", 134));
@@ -232,6 +232,7 @@ public class NewBank {
     }
 
     private String showAllAccounts(ArrayList<String> names, ArrayList<Customer> customers){
+
         String allAccounts = "";
         int id = 0;
         for(String name: names){
@@ -242,7 +243,9 @@ public class NewBank {
     }
 
     private String showMyAccounts(UserID customer) {
-        return (users.get(customer.getKey())).accountsToString();
+        return Database.showCustomerAccounts(customer.getKey());
+  //       System.out.println(users.get(customer.getKey()).accountString);
+  //       return (users.get(customer.getKey())).accountsToString();
     }
 
     /**
