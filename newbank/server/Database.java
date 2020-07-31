@@ -155,7 +155,7 @@ public class Database {
     }
 
     public static String findCustomerUsername(String username){
-        String sql = "SELECT username,password FROM customers WHERE username = ?";
+        String sql = "SELECT username FROM customers WHERE username = ?";
 
         try (Connection conn = Database.connect();
              PreparedStatement pstmt  = conn.prepareStatement(sql)){
@@ -191,6 +191,40 @@ public class Database {
         }
         return null;
     }
+    public static String findAdminUsername(String username){
+        String sql = "SELECT username FROM admin WHERE username = ?";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+
+            pstmt.setString(1,username);
+            ResultSet rs  = pstmt.executeQuery();
+            //   System.out.println(rs.getString("username") +  "\t" +
+            //                rs.getString("password"));
+
+            return rs.getString("username");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+    public static String findAdminPasword(String username){
+        String sql = "SELECT password FROM admin WHERE username = ?";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+
+            pstmt.setString(1,username);
+            ResultSet rs  = pstmt.executeQuery();
+            //   System.out.println(rs.getString("username") +  "\t" +
+            //                rs.getString("password"));
+
+            return rs.getString("password");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
 }
-
-
