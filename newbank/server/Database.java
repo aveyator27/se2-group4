@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 
 
@@ -90,7 +91,7 @@ public class Database {
         return null;
     }
 
-    public static void selectAllAccounts() {
+    public static String showAllAccounts() {
         String sql = "SELECT * FROM accounts";
 
         try {
@@ -99,14 +100,17 @@ public class Database {
             ResultSet rs = stmt.executeQuery(sql);
 
             // loop through the result set
+            String accounts = "";
             while (rs.next()) {
-                System.out.println(rs.getInt("username") + "\t" +
-                        rs.getString("accountType") + "\t" +
-                        rs.getDouble("balance"));
+                accounts += "openingBalance :"+(rs.getString("openingBalance") + ": " +
+                        "accountName"+ ": " + rs.getString("accountName")) +": "
+                        + "owner"+ ": " + rs.getString("owner") + "\n";
             }
+            return accounts;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+        return null;
 
 
     }
@@ -131,6 +135,27 @@ public class Database {
                 allAccounts += rs.getString("accountName") + ": "
                         + rs.getDouble("openingBalance") + ": "
                         + rs.getString("owner") + "\n";
+            }
+            return allAccounts;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+
+    }
+    public static ArrayList showCustomerAccountsFormat(String accountName) {
+        String sql = "SELECT accountName FROM accounts WHERE owner = ?";
+
+        try {
+            Connection conn = Database.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1,accountName);
+            ResultSet rs  = pstmt.executeQuery();
+            // conn.close();
+            // loop through the result set
+            ArrayList allAccounts = null;
+            while (rs.next()){
+                allAccounts.add(rs.getString("accountName"));
             }
             return allAccounts;
         } catch (SQLException e) {
@@ -228,3 +253,4 @@ public class Database {
         return null;
     }
 }
+
