@@ -115,13 +115,13 @@ public class Database {
 
     }
 
-    public static String showCustomerAccounts(String accountName) {
+    public static String showCustomerAccounts(String owner) {
         String sql = "SELECT * FROM accounts WHERE owner = ?";
 
         try {
             Connection conn = Database.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1,accountName);
+            pstmt.setString(1,owner);
             ResultSet rs  = pstmt.executeQuery();
             // conn.close();
             // loop through the result set
@@ -143,17 +143,15 @@ public class Database {
         return null;
 
     }
-    public static ArrayList showCustomerAccountsFormat(String accountName) {
-        String sql = "SELECT accountName FROM accounts WHERE owner = ?";
+    public static ArrayList<String> showCustomerAccountsFormat(String owner) {
+        String sql = "SELECT * FROM accounts WHERE owner = ?";
 
         try {
             Connection conn = Database.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1,accountName);
+            pstmt.setString(1, owner);
             ResultSet rs  = pstmt.executeQuery();
-            // conn.close();
-            // loop through the result set
-            ArrayList allAccounts = null;
+            ArrayList<String> allAccounts = new ArrayList();
             while (rs.next()){
                 allAccounts.add(rs.getString("accountName"));
             }
@@ -253,4 +251,3 @@ public class Database {
         return null;
     }
 }
-
