@@ -67,6 +67,13 @@ public class NewBank {
         users.put("Admin", admin);
         Admin mel = new Admin("mel");
         users.put("Mel", mel);
+        ArrayList<String> m = Database.showCustomerAccountsFormat("123");
+        for (String item : m){
+          System.out.println(item);
+        }
+
+
+
        // Database.insertAdmin("Sam","1234");
     }
 
@@ -215,8 +222,6 @@ public class NewBank {
                 if (isExistingUser(userName)) {
                     return false;
                 } else {
-                    Database.insertCustomer(userName, password);
-                    Database.insertAccount(0.0, "Main", userName);
                     //users.put(userName, customer);
                     return true;
                 }
@@ -435,19 +440,28 @@ public class NewBank {
 
                 // Second word from split string is accountName
                 String accountName = words[i];
+                // Need to check for non conflicting
 
                 System.out.println("New Account Name: " + accountName);
 
-                Customer customer = (Customer) users.get(customerID.getKey());
+             //   Customer customer = (Customer) users.get(customerID.getKey());
+               if (!Database.showCustomerAccounts(customerID.getKey()).contains(accountName)){
+                  // customer.addAccount(new Account(accountName, 0));
+                   Database.insertAccount(0.00,accountName, customerID.getKey());
+                   return successString;
 
-                if (customer.getAccounts().get(accountName)==null){
+               }
+               else {
+                   return  failString;
+               }
+                /*if (customer.getAccounts().get(accountName)==null){   pre database code
                     customer.addAccount(new Account(accountName, 0));
 
                     return successString;
 
                 } else {
                     return failString;
-                }
+                }*/
 
             } else if (i>=2){
                 System.out.println("Account name must only contain one word");
