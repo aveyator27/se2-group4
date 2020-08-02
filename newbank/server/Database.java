@@ -259,17 +259,19 @@ public class Database {
 
     public static void EditBalance(String accountName, String owner, Double amount) {
         double newBalance = Database.getBalance(accountName, owner) + amount;
-       String sql =" UPDATE accounts SET balance = ? WHERE owner = ? AND accountName = ?";
+        String sql = "UPDATE accounts SET openingBalance = ? WHERE owner = ? AND accountName = ?";
         try (Connection conn = Database.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
-        // You have to put where condition here, otherwise all rows will get affected. I assume your serch-key-column as id. Change 'id' according to your table
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setDouble(1, newBalance);
             pstmt.setString(2, owner);
             pstmt.setString(3, accountName);
             pstmt.executeUpdate();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
     }
 
     public static Double getBalance(String accountName, String owner) {
@@ -290,4 +292,23 @@ public class Database {
 
 
     }
+    public static String findCustomerAccount(String accountName, String owner) {
+        String sql = "SELECT accountName = ? FROM accounts WHERE owner = ?";
+
+        try {
+        Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql);{
+
+                pstmt.setString(1, accountName);
+                pstmt.setString(2, owner);
+                ResultSet rs = pstmt.executeQuery();
+                return rs.toString();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+
+        }
+        return null;
+    }
 }
+
