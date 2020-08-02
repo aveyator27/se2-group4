@@ -1,5 +1,6 @@
 package newbank.server;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,8 @@ public class NewBank {
         users.put("Marc", marc);
         //   Database.insertAccount(0.00, "Main","Marc");
         //   Database.deleteAccount("Marc","Main");
+    //    Database.EditBalance("Main", "1234",100.00);
+    //    Database.EditBalance("Main", "123",100.00);
 
         Customer wayne = new Customer("1234");
         wayne.addAccount(new Account("Main", 134));
@@ -67,15 +70,15 @@ public class NewBank {
         users.put("Admin", admin);
         Admin mel = new Admin("mel");
         users.put("Mel", mel);
-        ArrayList<String> m = Database.showCustomerAccountsFormat("123");
-        for (String item : m){
-          System.out.println(item);
+      //  ArrayList<String> m = Database.showCustomerAccountsFormat("123");
+   //     for (String item : m){
+   //       System.out.println(item);
         }
 
 
 
        // Database.insertAdmin("Sam","1234");
-    }
+
 
     public static NewBank getBank() {
         return bank;
@@ -306,34 +309,43 @@ public class NewBank {
     }
 
     private String sendMoney(UserID payerID, String request) {
+        Boolean balance = true;
         String[] words = request.split(" ");
         double amount = 0;
         Customer payee = null;
-        Customer payer = (Customer) users.get(payerID.getKey());
-        if (payer==null){
+       // pre database code Customer payer = (Customer) users.get(payerID.getKey());
+
+      // pre database code  if (payer==null){
+      //      System.out.println("Error: Payer not found");
+     //       return failString;
+     //   }
+        if (Database.findCustomerUsername(payerID.getKey()) == null) {
             System.out.println("Error: Payer not found");
             return failString;
         }
-
         Account payeeMain = null;
-        Account payerMain = payer.getAccounts().get("Main");
-
-        if (payerMain == null ){
+     // pre database code   Account payerMain = payer.getAccounts().get("Main");
+        if (Database.findCustomerAccount("Main",payerID.getKey()) == null){
             System.out.println("Error: Payer's Main Account not found.");
             return failString;
         }
+   /* pre database code    if (payerMain == null ){
+            System.out.println("Error: Payer's Main Account not found.");
+            return failString;
+        }*/
 
         for (int i = 0; i < words.length; i++) {
             if (i == 0) {
                 continue;
             } else if (i == 1) {
-                payee = (Customer) users.get(words[i]);
-                if (payee == null ){
+
+           // pre database code     payee = (Customer) users.get(words[i]);
+                if (Database.findCustomerUsername(words[i]) == null ){
                     System.out.println("Error: Payee not found.");
                     return failString;
                 }
-                payeeMain = payee.getAccounts().get("Main");
-                if (payeeMain == null ){
+             // pre database code payeeMain = payee.getAccounts().get("Main");
+                if (Database.findCustomerAccount("Main",words[i]) == null ){
                     System.out.println("Error: Payee's Main Account not found.");
                     return failString;
                 }
@@ -345,11 +357,15 @@ public class NewBank {
                 }
             }
         }
+        if (Database.getBalance("Main", payerID.getKey()) > amount) {
+                Database.EditBalance("Main", words[1], -amount);
+                Database.EditBalance("Main", payerID.getKey(), amount);
+                return successString;}
 
-        if (payerMain.withdraw(amount)) {
-            payeeMain.deposit(amount);
-            return successString;
-        } else {
+      // pre database code  if (payerMain.withdraw(amount)) {
+      //      payeeMain.deposit(amount);
+      //      return successString;
+         else {
             return failString;
         }
     }
