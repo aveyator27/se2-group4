@@ -1,6 +1,8 @@
 package newbank.server;
 
 import javax.sound.midi.SysexMessage;
+import javax.xml.crypto.Data;
+import java.lang.constant.Constable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -42,6 +44,7 @@ public class Database {
             System.out.println(e.getMessage());
         }
     }
+
     public static void insertAdmin(String username, String password) {
         String sql = "INSERT INTO admin(username, password, userType) values(?, ?, ?)";
         try {
@@ -81,8 +84,8 @@ public class Database {
             // loop through the result set
             String customers = "";
             while (rs.next()) {
-                customers += "username :"+(rs.getString("username") + ": " +
-                         "password"+ ": " + rs.getString("password")) +"\n";
+                customers += "username :" + (rs.getString("username") + ": " +
+                        "password" + ": " + rs.getString("password")) + "\n";
             }
             return customers;
         } catch (SQLException e) {
@@ -102,9 +105,9 @@ public class Database {
             // loop through the result set
             String accounts = "";
             while (rs.next()) {
-                accounts += "openingBalance :"+(rs.getString("openingBalance") + ": " +
-                        "accountName"+ ": " + rs.getString("accountName")) +": "
-                        + "owner"+ ": " + rs.getString("owner") + "\n";
+                accounts += "openingBalance :" + (rs.getString("openingBalance") + ": " +
+                        "accountName" + ": " + rs.getString("accountName")) + ": "
+                        + "owner" + ": " + rs.getString("owner") + "\n";
             }
             return accounts;
         } catch (SQLException e) {
@@ -121,8 +124,8 @@ public class Database {
         try {
             Connection conn = Database.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1,owner);
-            ResultSet rs  = pstmt.executeQuery();
+            pstmt.setString(1, owner);
+            ResultSet rs = pstmt.executeQuery();
             // conn.close();
             // loop through the result set
             String allAccounts = "";
@@ -131,7 +134,7 @@ public class Database {
                         rs.getString("accountName") + "|" +
                         rs.getString("owner"));
             }*/
-            while (rs.next()){
+            while (rs.next()) {
                 allAccounts += rs.getString("accountName") + ": "
                         + rs.getDouble("openingBalance") + ": "
                         + rs.getString("owner") + "\n";
@@ -143,6 +146,7 @@ public class Database {
         return null;
 
     }
+
     public static ArrayList<String> showCustomerAccountsFormat(String owner) {
         String sql = "SELECT * FROM accounts WHERE owner = ?";
 
@@ -150,9 +154,9 @@ public class Database {
             Connection conn = Database.connect();
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, owner);
-            ResultSet rs  = pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
             ArrayList<String> allAccounts = new ArrayList();
-            while (rs.next()){
+            while (rs.next()) {
                 allAccounts.add(rs.getString("accountName"));
             }
             return allAccounts;
@@ -177,14 +181,14 @@ public class Database {
         }
     }
 
-    public static String findCustomerUsername(String username){
+    public static String findCustomerUsername(String username) {
         String sql = "SELECT username FROM customers WHERE username = ?";
 
         try (Connection conn = Database.connect();
-             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1,username);
-            ResultSet rs  = pstmt.executeQuery();
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
             //   System.out.println(rs.getString("username") +  "\t" +
             //                rs.getString("password"));
 
@@ -196,14 +200,14 @@ public class Database {
         return null;
     }
 
-    public static String findCustomerPassword(String username){
+    public static String findCustomerPassword(String username) {
         String sql = "SELECT password FROM customers WHERE username = ?";
 
         try (Connection conn = Database.connect();
-             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1,username);
-            ResultSet rs  = pstmt.executeQuery();
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
             //   System.out.println(rs.getString("username") +  "\t" +
             //                rs.getString("password"));
 
@@ -214,14 +218,15 @@ public class Database {
         }
         return null;
     }
-    public static String findAdminUsername(String username){
+
+    public static String findAdminUsername(String username) {
         String sql = "SELECT username FROM admin WHERE username = ?";
 
         try (Connection conn = Database.connect();
-             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1,username);
-            ResultSet rs  = pstmt.executeQuery();
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
             //   System.out.println(rs.getString("username") +  "\t" +
             //                rs.getString("password"));
 
@@ -232,14 +237,15 @@ public class Database {
         }
         return null;
     }
-    public static String findAdminPasword(String username){
+
+    public static String findAdminPasword(String username) {
         String sql = "SELECT password FROM admin WHERE username = ?";
 
         try (Connection conn = Database.connect();
-             PreparedStatement pstmt  = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1,username);
-            ResultSet rs  = pstmt.executeQuery();
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
             //   System.out.println(rs.getString("username") +  "\t" +
             //                rs.getString("password"));
 
@@ -249,5 +255,39 @@ public class Database {
             System.out.println(e.getMessage());
         }
         return null;
+    }
+
+    public static void EditBalance(String accountName, String owner, Double amount) {
+        double newBalance = Database.getBalance(accountName, owner) + amount;
+       String sql =" UPDATE accounts SET balance = ? WHERE owner = ? AND accountName = ?";
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
+        // You have to put where condition here, otherwise all rows will get affected. I assume your serch-key-column as id. Change 'id' according to your table
+            pstmt.setDouble(1, newBalance);
+            pstmt.setString(2, owner);
+            pstmt.setString(3, accountName);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public static Double getBalance(String accountName, String owner) {
+        String sql = "SELECT openingBalance FROM accounts WHERE accountName = ? AND owner = ?";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, accountName);
+            pstmt.setString(2, owner);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.getDouble("openingBalance");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return -1.1;
+
+
     }
 }
