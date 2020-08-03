@@ -393,7 +393,8 @@ public class NewBank {
 
 
     private String moveFunds(UserID customer, String request) {
-
+        String accountFrom = "";
+        String accountTo = "";
         double amount = 0;
         Account from = null;
         Account to = null;
@@ -410,27 +411,46 @@ public class NewBank {
                     System.out.println("Amount must be greater than zero");
                     return failString;
                 }
-                System.out.println("Amount: " + Double.toString(amount));
+                System.out.println("Amount: " + amount);
             } else if (i == 2) {
-                from = findCustomerAccount(customer, words[i]);
+           //     from = findCustomerAccount(customer, words[i]);
+                accountFrom = words[i];
                 System.out.println("From: " + words[i]);
             } else if (i == 3) {
-                to = findCustomerAccount(customer, words[i]);
+          //      to = findCustomerAccount(customer, words[i]);
+                accountTo = words[i];
                 System.out.println("To: " + words[i]);
             }
         }
 
-        if (from == null || to == null) {
+   /*     if (from == null || to == null) {
+            System.out.println("Error: Request incomplete.");
+            return failString;
+        }*/
+         if (Database.findCustomerAccount(accountFrom,customer.getKey()) == null
+                  || Database.findCustomerAccount(accountTo,customer.getKey()) == null) {
             System.out.println("Error: Request incomplete.");
             return failString;
         }
 
-        if (from.withdraw(amount)) {
+       /*  if (from.withdraw(amount)) {
             to.deposit(amount);
             return successString;
         } else {
             return failString;
         }
+*/
+      if ((Database.EditBalance(accountFrom,customer.getKey(),-amount))
+              &(Database.EditBalance(accountTo,customer.getKey(),amount))) {
+          return successString;
+        } else {
+            return failString;
+        }
+
+
+
+
+
     }
 
     private Account findCustomerAccount(UserID customerID, String accountName) {
