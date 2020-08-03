@@ -1,8 +1,6 @@
 package newbank.server;
 
-import javax.sound.midi.SysexMessage;
-import javax.xml.crypto.Data;
-import java.lang.constant.Constable;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -43,6 +41,7 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
     }
 
     public static void insertAdmin(String username, String password) {
@@ -91,6 +90,7 @@ public class Database {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+
         return null;
     }
 
@@ -257,8 +257,11 @@ public class Database {
         return null;
     }
 
-    public static void EditBalance(String accountName, String owner, Double amount) {
+    public static boolean EditBalance(String accountName, String owner, Double amount) {
         double newBalance = Database.getBalance(accountName, owner) + amount;
+        if (newBalance < 0){
+            return false;
+        }
         String sql = "UPDATE accounts SET openingBalance = ? WHERE owner = ? AND accountName = ?";
         try (Connection conn = Database.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -267,9 +270,10 @@ public class Database {
             pstmt.setString(2, owner);
             pstmt.setString(3, accountName);
             pstmt.executeUpdate();
-
+            return false;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+            return false;
         }
 
     }
@@ -311,4 +315,5 @@ public class Database {
         return null;
     }
 }
+
 
