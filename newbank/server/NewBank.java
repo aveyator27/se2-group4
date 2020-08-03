@@ -379,9 +379,11 @@ public class NewBank {
                 // ignore the command word
                 continue;
             } else if (i == 1) {
-                if (users.containsKey(words[1])) {
+            //    if (users.containsKey(words[1])) {
+                    if (!(Database.findCustomerUsername(words[1]) == null)){
                     System.out.println("User identified");
-                    return (users.get(words[1]).accountsToString());
+                    return Database.showCustomerAccounts(words[1]);
+               //     return (users.get(words[1]).accountsToString());
                 }
             }
         }
