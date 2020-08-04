@@ -1,6 +1,4 @@
-package server;
-
-import server.Account;
+package newbank.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;

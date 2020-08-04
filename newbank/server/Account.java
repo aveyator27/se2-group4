@@ -1,4 +1,5 @@
-package server;
+package newbank.server;
+
 import java.util.ArrayList;
 
 public class Account {
@@ -7,7 +8,7 @@ public class Account {
 
     //private double openingBalance;
 
-    private ArrayList<Transaction> transactions;
+    private ArrayList<Transaction> transactions = new ArrayList<>();
 
     public Account(String accountName, double openingBalance) {
         this.accountName = accountName;
