@@ -22,7 +22,6 @@ public class NewBankClientHandler extends Thread {
     public void run() {
         // keep getting requests from the client and processing them
         try {
-            Database.connect();
             UserID user = null;
             boolean invalidChoice = true;
             while (invalidChoice) {
@@ -36,17 +35,12 @@ public class NewBankClientHandler extends Thread {
                     out.println("Enter Username");
                     String userName = in.readLine();
                     //ask for new password
-                    out.println("Enter Password, must contain at least eight characters." +"\n" +
-                            "And at least ONE special character," + "\n" +
-                            "and at least ONE upper case AND one lower case character.");
+                    out.println("Enter Password");
                     String password = in.readLine();
-                    out.println("Enter the Password again");
-                    String passwordRepeat = in.readLine();
                     //create the account
-                    boolean regSuccess = bank.createCustomer(userName, password, passwordRepeat);
+                    boolean regSuccess = bank.createCustomer(userName, password);
                     //if registered, automatically authenticate user and login
                     if (regSuccess) {
-                        Database.insertCustomer(userName, password);
                         user = bank.checkLogInDetails(userName, password);
                         out.println("Successfully registered.");
                         //otherwise display error message
@@ -101,4 +95,5 @@ public class NewBankClientHandler extends Thread {
             }
         }
     }
+
 }

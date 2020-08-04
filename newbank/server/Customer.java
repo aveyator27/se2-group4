@@ -1,5 +1,7 @@
 package newbank.server;
 
+import server.Account;
+
 import java.util.HashMap;
 import java.util.Map;
 
