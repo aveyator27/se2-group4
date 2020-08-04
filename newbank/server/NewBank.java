@@ -57,8 +57,8 @@ public class NewBank {
         users.put("Marc", marc);
         //   Database.insertAccount(0.00, "Main","Marc");
         //   Database.deleteAccount("Marc","Main");
-    //    Database.EditBalance("Main", "1234",100.00);
-    //    Database.EditBalance("Main", "123",100.00);
+        //    Database.EditBalance("Main", "1234",100.00);
+        //    Database.EditBalance("Main", "123",100.00);
 
         Customer wayne = new Customer("1234");
         wayne.addAccount(new Account("Main", 134));
@@ -70,14 +70,14 @@ public class NewBank {
         users.put("Admin", admin);
         Admin mel = new Admin("mel");
         users.put("Mel", mel);
-      //  ArrayList<String> m = Database.showCustomerAccountsFormat("123");
-   //     for (String item : m){
-   //       System.out.println(item);
-        }
+        //  ArrayList<String> m = Database.showCustomerAccountsFormat("123");
+        //     for (String item : m){
+        //       System.out.println(item);
+    }
 
 
 
-       // Database.insertAdmin("Sam","1234");
+    // Database.insertAdmin("Sam","1234");
 
 
     public static NewBank getBank() {
@@ -139,9 +139,9 @@ public class NewBank {
         }
 
         System.out.println("Command: " + command);
-            if ((userCustomer) &&(successfulLogin))
-     //   if (users.containsKey(customer.getKey())&&users.get(customer.getKey()).userType.equals("customer"))
-           {
+        if ((userCustomer) &&(successfulLogin))
+        //   if (users.containsKey(customer.getKey())&&users.get(customer.getKey()).userType.equals("customer"))
+        {
             //if customer show customer menu
             switch (command) {
                 case "SHOWMYACCOUNTS":
@@ -158,7 +158,7 @@ public class NewBank {
                     return failString;
             }
         }  else if ((!userCustomer) &&(successfulLogin))
-           // else if (users.containsKey(customer.getKey())&&users.get(customer.getKey()).userType.equals("admin"))
+        // else if (users.containsKey(customer.getKey())&&users.get(customer.getKey()).userType.equals("admin"))
         {
             //if admin show different menu
             switch (command) {
@@ -220,8 +220,8 @@ public class NewBank {
             }
 
             if (validPassword) {
-            //    Customer customer = new Customer(password);
-            //    customer.addAccount(new Account("Main", 0.0));
+                //    Customer customer = new Customer(password);
+                //    customer.addAccount(new Account("Main", 0.0));
                 if (isExistingUser(userName)) {
                     return false;
                 } else {
@@ -313,18 +313,18 @@ public class NewBank {
         String[] words = request.split(" ");
         double amount = 0;
         Customer payee = null;
-       // pre database code Customer payer = (Customer) users.get(payerID.getKey());
+        // pre database code Customer payer = (Customer) users.get(payerID.getKey());
 
-      // pre database code  if (payer==null){
-      //      System.out.println("Error: Payer not found");
-     //       return failString;
-     //   }
+        // pre database code  if (payer==null){
+        //      System.out.println("Error: Payer not found");
+        //       return failString;
+        //   }
         if (Database.findCustomerUsername(payerID.getKey()) == null) {
             System.out.println("Error: Payer not found");
             return failString;
         }
         Account payeeMain = null;
-     // pre database code   Account payerMain = payer.getAccounts().get("Main");
+        // pre database code   Account payerMain = payer.getAccounts().get("Main");
         if (Database.findCustomerAccount("Main",payerID.getKey()) == null){
             System.out.println("Error: Payer's Main Account not found.");
             return failString;
@@ -339,12 +339,12 @@ public class NewBank {
                 continue;
             } else if (i == 1) {
 
-           // pre database code     payee = (Customer) users.get(words[i]);
+                // pre database code     payee = (Customer) users.get(words[i]);
                 if (Database.findCustomerUsername(words[i]) == null ){
                     System.out.println("Error: Payee not found.");
                     return failString;
                 }
-             // pre database code payeeMain = payee.getAccounts().get("Main");
+                // pre database code payeeMain = payee.getAccounts().get("Main");
                 if (Database.findCustomerAccount("Main",words[i]) == null ){
                     System.out.println("Error: Payee's Main Account not found.");
                     return failString;
@@ -358,14 +358,14 @@ public class NewBank {
             }
         }
         if (Database.getBalance("Main", payerID.getKey()) > amount) {
-                Database.EditBalance("Main", words[1], -amount);
-                Database.EditBalance("Main", payerID.getKey(), amount);
-                return successString;}
+            Database.EditBalance("Main", words[1], amount);
+            Database.EditBalance("Main", payerID.getKey(), -amount);
+            return successString;}
 
-      // pre database code  if (payerMain.withdraw(amount)) {
-      //      payeeMain.deposit(amount);
-      //      return successString;
-         else {
+        // pre database code  if (payerMain.withdraw(amount)) {
+        //      payeeMain.deposit(amount);
+        //      return successString;
+        else {
             return failString;
         }
     }
@@ -379,11 +379,11 @@ public class NewBank {
                 // ignore the command word
                 continue;
             } else if (i == 1) {
-            //    if (users.containsKey(words[1])) {
-                    if (!(Database.findCustomerUsername(words[1]) == null)){
+                //    if (users.containsKey(words[1])) {
+                if (!(Database.findCustomerUsername(words[1]) == null)){
                     System.out.println("User identified");
                     return Database.showCustomerAccounts(words[1]);
-               //     return (users.get(words[1]).accountsToString());
+                    //     return (users.get(words[1]).accountsToString());
                 }
             }
         }
@@ -413,11 +413,11 @@ public class NewBank {
                 }
                 System.out.println("Amount: " + amount);
             } else if (i == 2) {
-           //     from = findCustomerAccount(customer, words[i]);
+                //     from = findCustomerAccount(customer, words[i]);
                 accountFrom = words[i];
                 System.out.println("From: " + words[i]);
             } else if (i == 3) {
-          //      to = findCustomerAccount(customer, words[i]);
+                //      to = findCustomerAccount(customer, words[i]);
                 accountTo = words[i];
                 System.out.println("To: " + words[i]);
             }
@@ -427,8 +427,8 @@ public class NewBank {
             System.out.println("Error: Request incomplete.");
             return failString;
         }*/
-         if (Database.findCustomerAccount(accountFrom,customer.getKey()) == null
-                  || Database.findCustomerAccount(accountTo,customer.getKey()) == null) {
+        if (Database.findCustomerAccount(accountFrom,customer.getKey()) == null
+                || Database.findCustomerAccount(accountTo,customer.getKey()) == null) {
             System.out.println("Error: Request incomplete.");
             return failString;
         }
@@ -440,9 +440,9 @@ public class NewBank {
             return failString;
         }
 */
-      if ((Database.EditBalance(accountFrom,customer.getKey(),-amount))
-              &(Database.EditBalance(accountTo,customer.getKey(),amount))) {
-          return successString;
+        if ((Database.EditBalance(accountFrom,customer.getKey(),-amount))
+                &(Database.EditBalance(accountTo,customer.getKey(),amount))) {
+            return successString;
         } else {
             return failString;
         }
@@ -482,21 +482,19 @@ public class NewBank {
 
                 System.out.println("New Account Name: " + accountName);
 
-             //   Customer customer = (Customer) users.get(customerID.getKey());
-               if (!Database.showCustomerAccounts(customerID.getKey()).contains(accountName)){
-                  // customer.addAccount(new Account(accountName, 0));
-                   Database.insertAccount(0.00,accountName, customerID.getKey());
-                   return successString;
-
-               }
-               else {
-                   return  failString;
-               }
-                /*if (customer.getAccounts().get(accountName)==null){   pre database code
-                    customer.addAccount(new Account(accountName, 0));
-
+                //   Customer customer = (Customer) users.get(customerID.getKey());
+                if (!Database.showCustomerAccounts(customerID.getKey()).contains(accountName)){
+                    // customer.addAccount(new Account(accountName, 0));
+                    Database.insertAccount(0.00,accountName, customerID.getKey());
                     return successString;
 
+                }
+                else {
+                    return  failString;
+                }
+                /*if (customer.getAccounts().get(accountName)==null){   pre database code
+                    customer.addAccount(new Account(accountName, 0));
+                    return successString;
                 } else {
                     return failString;
                 }*/
