@@ -32,16 +32,28 @@ public class NewBankClientHandler extends Thread {
                 //for registration
                 if (choice.equals("REGISTER")) {
                     invalidChoice = false;
-                    //ask for new username
-                    out.println("Enter Username");
-                    String userName = in.readLine();
-                    //ask for new password
-                    out.println("Enter Password, must contain at least eight characters." +"\n" +
-                            "And at least ONE special character," + "\n" +
-                            "and at least ONE upper case AND one lower case character.");
-                    String password = in.readLine();
-                    out.println("Enter the Password again");
-                    String passwordRepeat = in.readLine();
+                    String userName = "";
+                    String password = "";
+                    String passwordRepeat = "";
+                    do {
+                        //ask for new username
+                        out.println("Enter Username");
+                        userName = in.readLine();
+                        //ask for new password
+                        out.println("Enter Password, must contain at least eight characters." + "\n" +
+                                "And at least ONE special character," + "\n" +
+                                "and at least ONE upper case AND one lower case character.");
+                        password = in.readLine();
+                        out.println("Enter the Password again");
+                        passwordRepeat = in.readLine();
+                        if(!bank.isValidReg(userName, password, passwordRepeat)){
+                            out.println("Error:");
+                            for(Object err: bank.getErrorList()) {
+                                out.println(err);
+                            }
+                            out.println("Please try again. \n");
+                        }
+                    } while(!bank.isValidReg(userName, password, passwordRepeat));
                     //create the account
                     boolean regSuccess = bank.createCustomer(userName, password, passwordRepeat);
                     //if registered, automatically authenticate user and login
@@ -51,7 +63,7 @@ public class NewBankClientHandler extends Thread {
                         out.println("Successfully registered.");
                         //otherwise display error message
                     } else {
-                        out.println("Error. Not registered. Please try again.");
+                        out.println("Unknown Error. Not registered. Please try again.");
                         invalidChoice = true;
                     }
                     //for login
