@@ -346,7 +346,6 @@ public class Database {
             pstmt.setString(8, customerAccount);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+            System.out.println(e.getMessage()); }
     }
 }
