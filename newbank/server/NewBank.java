@@ -405,6 +405,7 @@ public class NewBank {
         Account from = null;
         Account to = null;
         String errormsg = "";
+        Customer user = (Customer) Database.getCustomer(customer);
 
         String[] words = request.split(" ");
 
@@ -453,6 +454,12 @@ public class NewBank {
 */
         if ((Database.EditBalance(accountFrom, customer.getKey(), -amount))) {
             if (Database.EditBalance(accountTo, customer.getKey(), amount)) {
+                Transaction t1 = new Transaction(amount,"Payment");
+                Transaction t2 = new Transaction(-amount, "Payment");
+                t1.setAccount(accountFrom);
+                t2.setAccount(accountTo);
+                user.addTransaction(t1);
+                user.addTransaction(t2);
                 return successString;
             } else {
                 //if the second transfer cannot be completed, add balance back

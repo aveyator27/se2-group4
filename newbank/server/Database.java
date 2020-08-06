@@ -332,6 +332,7 @@ public class Database {
         String account = t.getAccount();
         String date = t.getDate();
         String recipient = t.getRecipient();
+        String customerAccount = t.getCustomerAccount();
         String sql = "INSERT INTO transactions(customerName, accountName, index, t_amount, t_Ref, t_Customer, t_Account, t_Date) values(?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Database.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -342,6 +343,7 @@ public class Database {
             pstmt.setString(5,account);
             pstmt.setString(6,date);
             pstmt.setString(7,recipient);
+            pstmt.setString(8, customerAccount);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());

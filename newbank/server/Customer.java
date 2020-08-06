@@ -15,11 +15,14 @@ public class Customer extends User{
 
     private ArrayList<Transaction> transactions;
 
+    private int transactionNum;
+
     public Customer(String password) {
         this.password = password;
         this.userType = "customer";
         accounts = new HashMap<>();
         transactions = new ArrayList<Transaction>();
+        transactionNum = 0;
     }
 
     public String accountsToString() {
@@ -38,9 +41,10 @@ public class Customer extends User{
         return accounts;
     }
 
-    public void addTransaction(Transaction t, int index){
+    public void addTransaction(Transaction t){
         transactions.add(t);
-        Database.addTransaction(t,index);
+        Database.addTransaction(t,transactionNum);
+        transactionNum++;
     }
 
 }
