@@ -1,5 +1,6 @@
 package newbank.server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +13,13 @@ public class Customer extends User{
 
     private HashMap<String, Account> accounts;
 
+    private ArrayList<Transaction> transactions;
+
     public Customer(String password) {
         this.password = password;
         this.userType = "customer";
         accounts = new HashMap<>();
+        transactions = new ArrayList<Transaction>();
     }
 
     public String accountsToString() {
@@ -32,6 +36,11 @@ public class Customer extends User{
 
     public HashMap<String, Account> getAccounts() {
         return accounts;
+    }
+
+    public void addTransaction(Transaction t, int index){
+        transactions.add(t);
+        Database.addTransaction(t,index);
     }
 
 }

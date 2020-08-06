@@ -6,6 +6,8 @@ public class Transaction {
     String t_Customer;
     String t_Account;
     String t_Date;
+    String t_Recipient;
+    String t_CustomerAccount;
 
     public Transaction(double amount, String reference){
         t_Amount=amount;
@@ -44,5 +46,12 @@ public class Transaction {
         return t_Ref;
     }
     public void setRef(String ref){ this.t_Ref = ref; }
+
+    public String getRecipient() {
+        return t_Recipient;
+    }
+    public String getCustomerAccount(){
+        return t_CustomerAccount;
+    }
 
 }

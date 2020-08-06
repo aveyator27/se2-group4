@@ -323,4 +323,28 @@ public class Database {
         }
         return null;
     }
+
+    public static void addTransaction(Transaction t, int index){
+        String customerName = t.getCustomer();
+        String accountName = t.getAccount();
+        Double amount = t.getAmount();
+        String ref = t.getRef();
+        String account = t.getAccount();
+        String date = t.getDate();
+        String recipient = t.getRecipient();
+        String sql = "INSERT INTO transactions(customerName, accountName, index, t_amount, t_Ref, t_Customer, t_Account, t_Date) values(?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, customerName);
+            pstmt.setString(2, accountName);
+            pstmt.setDouble(3, amount);
+            pstmt.setString(4,ref);
+            pstmt.setString(5,account);
+            pstmt.setString(6,date);
+            pstmt.setString(7,recipient);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 }
