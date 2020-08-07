@@ -159,6 +159,8 @@ public class NewBank {
                     return sendMoney(customer, request);
                 case "NEWACCOUNT":
                     return newAccount(customer,request);
+                case "PRINTSTATEMENT":
+                    return printStatement(customer, request);
                 default:
                     return failString;
             }
@@ -323,7 +325,9 @@ public class NewBank {
         Boolean balance = true;
         String[] words = request.split(" ");
         double amount = 0;
-        Customer payee = null;
+        Account payerAccount = null;
+        Account recipientAccount = null;
+        UserID recipientID;
         // pre database code Customer payer = (Customer) users.get(payerID.getKey());
 
         // pre database code  if (payer==null){
@@ -338,11 +342,9 @@ public class NewBank {
         if (Database.findCustomerAccount("Main",payerID.getKey()) == null){
             return "Error: Payer's Main Account not found.";
             //return failString;
+        } else {
+            payerAccount = findCustomerAccount(payerID, "Main");
         }
-   /* pre database code    if (payerMain == null ){
-            System.out.println("Error: Payer's Main Account not found.");
-            return failString;
-        }*/
 
         for (int i = 0; i < words.length; i++) {
             if (i == 0) {
@@ -351,11 +353,15 @@ public class NewBank {
 
                 // pre database code     payee = (Customer) users.get(words[i]);
                 if (Database.findCustomerUsername(words[i]) == null ){
-                    return "Error: Payee not found.";
+                    return "Error: Recipient not found.";
+                }  else {
+                    recipientID = new UserID(words[i]);
                 }
                 // pre database code payeeMain = payee.getAccounts().get("Main");
                 if (Database.findCustomerAccount("Main",words[i]) == null ){
-                    return "Error: Payee's Main Account not found.";
+                    return "Error: Recipient's Main Account not found.";
+                } else {
+                    recipientAccount = findCustomerAccount(recipientID, "Main");
                 }
             } else if (i == 2) {
                 amount = Double.valueOf(words[i]);
@@ -365,9 +371,18 @@ public class NewBank {
             }
         }
         if (Database.getBalance("Main", payerID.getKey()) >= amount) {
-            Database.EditBalance("Main", words[1], amount);
-            Database.EditBalance("Main", payerID.getKey(), -amount);
-            return successString;}
+            try {
+                Transaction t1 = new Transaction(-amount, "Transfer");
+                Transaction t2 = new Transaction(amount, "Transfer");
+                payerAccount.addTransaction(t1);
+                recipientAccount.addTransaction(t2);
+                Database.EditBalance("Main", words[1], amount);
+                Database.EditBalance("Main", payerID.getKey(), -amount);
+                return successString;
+            } catch(Exception e){
+                return "Unknown error occurred. Please contact Customer Services.";
+            }
+        }
 
         // pre database code  if (payerMain.withdraw(amount)) {
         //      payeeMain.deposit(amount);
@@ -405,7 +420,6 @@ public class NewBank {
         Account from = null;
         Account to = null;
         String errormsg = "";
-        Customer user = (Customer) Database.getCustomer(customer);
 
         String[] words = request.split(" ");
 
@@ -454,12 +468,12 @@ public class NewBank {
 */
         if ((Database.EditBalance(accountFrom, customer.getKey(), -amount))) {
             if (Database.EditBalance(accountTo, customer.getKey(), amount)) {
-                Transaction t1 = new Transaction(amount,"Payment");
-                Transaction t2 = new Transaction(-amount, "Payment");
-                t1.setAccount(accountFrom);
-                t2.setAccount(accountTo);
-                user.addTransaction(t1);
-                user.addTransaction(t2);
+                Transaction t1 = new Transaction(-amount,"Funds moved");
+                Transaction t2 = new Transaction(amount, "Funds moved");
+                Account a1 = findCustomerAccount(customer, accountFrom);
+                Account a2 = findCustomerAccount(customer, accountTo);
+                a1.addTransaction(t1);
+                a2.addTransaction(t2);
                 return successString;
             } else {
                 //if the second transfer cannot be completed, add balance back
@@ -485,6 +499,30 @@ public class NewBank {
             return customer.getAccounts().get(accountName);
         }
 
+    }
+
+    private String printStatement(UserID customerID, String request){
+        String[] words = request.split(" ");
+        String statement = "";
+        Account statementAccount = null;
+        for(int i = 0; i<words.length; i++){
+            if(i==0){
+                statementAccount = findCustomerAccount(customerID, "Main");
+            } else if (i==1){
+                statementAccount = findCustomerAccount(customerID, words[i]);
+            }
+        }
+        if (statementAccount == null){
+            return "Error. Account could not be found";
+        } else {
+            ArrayList<Transaction> transactions = statementAccount.getTransactions();
+            int i = 1;
+            for(Transaction t: transactions){
+                statement = statement+"Transaction: "+i+"\n"+"Date: "+t.getDate()+" Amount: "+t.getAmount()+" Ref:"+t.getRef()+" From/To: "+t.getCustomer()+" Account:"+t.getAccount()+" \n";
+            i++;
+            }
+        }
+        return statement;
     }
 
     private String newAccount (UserID customerID, String request) {

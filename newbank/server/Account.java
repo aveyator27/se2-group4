@@ -57,4 +57,13 @@ public class Account {
         return (accountName + ": " + String.format("%.2f", getBalance()) + "\n");
     }
 
+    public void addTransaction(Transaction t){
+        transactions.add(t);
+        Database.addTransaction(t, transactions.size());
+    }
+
+    public ArrayList<Transaction> getTransactions(){
+        return transactions;
+    }
+
 }
