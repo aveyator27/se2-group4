@@ -138,6 +138,33 @@ public class Database {
         return null;
 
     }
+    public static String showCustomerAccountsCreation(String owner) {
+        String sql = "SELECT * FROM accounts WHERE owner = ?";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, owner);
+            ResultSet rs = pstmt.executeQuery();
+            // conn.close();
+            // loop through the result set
+            String allAccounts = "";
+         /*   while (rs.next()) {
+                System.out.println(rs.getDouble("openingBalance") + "|" +
+                        rs.getString("accountName") + "|" +
+                        rs.getString("owner"));
+            }*/
+            while (rs.next()) {
+                allAccounts += rs.getString("accountName")
+                        + rs.getDouble("openingBalance")
+                        + rs.getString("owner");
+            }
+            return allAccounts;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+
+    }
 
     public static ArrayList<String> showCustomerAccountsFormat(String owner) {
         String sql = "SELECT * FROM accounts WHERE owner = ?";
@@ -345,5 +372,28 @@ public class Database {
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage()); }
+    }
+
+    public static Account getAccount(String customerName, String accountName){
+        String sql = "SELECT * FROM transactions WHERE CustomerName = ? AND AccountName = ?";
+        try {
+            Connection conn = Database.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, customerName);
+            pstmt.setString(2, accountName);
+            ResultSet rs = pstmt.executeQuery();
+            ArrayList<Transaction> transactions = new ArrayList<>();
+            if (rs==null){
+                return null;
+            }
+            while (rs.next()) {
+                // add the transaction to the ArrayList
+                //...
+            }
+            return new Account(accountName, transactions);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
     }
 }
