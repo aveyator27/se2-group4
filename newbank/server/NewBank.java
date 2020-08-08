@@ -375,7 +375,9 @@ public class NewBank {
                 Transaction t1 = new Transaction(-amount, "Transfer");
                 Transaction t2 = new Transaction(amount, "Transfer");
                 payerAccount.addTransaction(t1);
+                Database.addTransaction(t1, payerAccount.getTransactions().size());
                 recipientAccount.addTransaction(t2);
+                Database.addTransaction(t2,recipientAccount.getTransactions().size());
                 Database.EditBalance("Main", words[1], amount);
                 Database.EditBalance("Main", payerID.getKey(), -amount);
                 return successString;
@@ -473,7 +475,9 @@ public class NewBank {
                 Account a1 = findCustomerAccount(customer, accountFrom);
                 Account a2 = findCustomerAccount(customer, accountTo);
                 a1.addTransaction(t1);
+                Database.addTransaction(t1, a1.getTransactions().size());
                 a2.addTransaction(t2);
+                Database.addTransaction(t2, a2.getTransactions().size());
                 return successString;
             } else {
                 //if the second transfer cannot be completed, add balance back
@@ -490,14 +494,14 @@ public class NewBank {
     }
 
     private Account findCustomerAccount(UserID customerID, String accountName) {
-
-        Customer customer = (Customer) users.get(customerID.getKey());
+      /*  Customer customer = (Customer) users.get(customerID.getKey());
 
         if (customer==null){
             return null;
         } else {
             return customer.getAccounts().get(accountName);
-        }
+        }*/
+     return Database.getAccount(customerID.getKey(),accountName);
 
     }
 
@@ -508,8 +512,10 @@ public class NewBank {
         for(int i = 0; i<words.length; i++){
             if(i==0){
                 statementAccount = findCustomerAccount(customerID, "Main");
+                // I need to write a database method for this
             } else if (i==1){
                 statementAccount = findCustomerAccount(customerID, words[i]);
+                // database method for this
             }
         }
         if (statementAccount == null){
