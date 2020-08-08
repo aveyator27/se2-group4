@@ -16,6 +16,11 @@ public class Account {
         transactions.add(new Transaction(openingBalance, "opening"));
     }
 
+    public Account(String accountName, ArrayList<Transaction> transactions){
+        this.accountName = accountName;
+        this.transactions = transactions;
+    }
+
     public void deposit(double amount) {
 
         //openingBalance = openingBalance + amount;
@@ -41,7 +46,7 @@ public class Account {
     }
 
     // get balance by summing transaction array element
-    private double getBalance(){
+    public double getBalance(){
         double sum = 0;
         for (int i=0; i<transactions.size(); i++){
             sum += transactions.get(i).getAmount();
