@@ -33,7 +33,7 @@ public class NewBank {
     }
 
     private void addTestData() {
-        Customer bhagy = new Customer("1234");
+     /*   Customer bhagy = new Customer("1234");
         bhagy.addAccount(new Account("Main", 1000.0));
         users.put("Bhagy", bhagy);
         //    Database.insertCustomer("Bhagy", "1234");
@@ -77,7 +77,7 @@ public class NewBank {
         users.put("Mel", mel);
         //  ArrayList<String> m = Database.showCustomerAccountsFormat("123");
         //     for (String item : m){
-        //       System.out.println(item);
+        //       System.out.println(item);*/
     }
 
 
@@ -325,9 +325,7 @@ public class NewBank {
         Boolean balance = true;
         String[] words = request.split(" ");
         double amount = 0;
-        Account payerAccount = null;
-        Account recipientAccount = null;
-        UserID recipientID;
+        Customer payee = null;
         // pre database code Customer payer = (Customer) users.get(payerID.getKey());
 
         // pre database code  if (payer==null){
@@ -342,9 +340,11 @@ public class NewBank {
         if (Database.findCustomerAccount("Main",payerID.getKey()) == null){
             return "Error: Payer's Main Account not found.";
             //return failString;
-        } else {
-            payerAccount = findCustomerAccount(payerID, "Main");
         }
+   /* pre database code    if (payerMain == null ){
+            System.out.println("Error: Payer's Main Account not found.");
+            return failString;
+        }*/
 
         for (int i = 0; i < words.length; i++) {
             if (i == 0) {
@@ -353,15 +353,11 @@ public class NewBank {
 
                 // pre database code     payee = (Customer) users.get(words[i]);
                 if (Database.findCustomerUsername(words[i]) == null ){
-                    return "Error: Recipient not found.";
-                }  else {
-                    recipientID = new UserID(words[i]);
+                    return "Error: Payee not found.";
                 }
                 // pre database code payeeMain = payee.getAccounts().get("Main");
                 if (Database.findCustomerAccount("Main",words[i]) == null ){
-                    return "Error: Recipient's Main Account not found.";
-                } else {
-                    recipientAccount = findCustomerAccount(recipientID, "Main");
+                    return "Error: Payee's Main Account not found.";
                 }
             } else if (i == 2) {
                 amount = Double.valueOf(words[i]);
@@ -371,18 +367,15 @@ public class NewBank {
             }
         }
         if (Database.getBalance("Main", payerID.getKey()) >= amount) {
-            try {
-                Transaction t1 = new Transaction(-amount, "Transfer");
-                Transaction t2 = new Transaction(amount, "Transfer");
-                payerAccount.addTransaction(t1);
-                recipientAccount.addTransaction(t2);
-                Database.EditBalance("Main", words[1], amount);
-                Database.EditBalance("Main", payerID.getKey(), -amount);
-                return successString;
-            } catch(Exception e){
-                return "Unknown error occurred. Please contact Customer Services.";
-            }
-        }
+            Database.EditBalance("Main", words[1], amount);
+            Database.EditBalance("Main", payerID.getKey(), -amount);
+            Transaction t1 = new Transaction(-amount,"Paying");
+            Transaction t2 = new Transaction(amount, "Paying");
+            t1.setTransParm("Main","01/01/2020",payerID.getKey());
+            t2.setTransParm("Main","01/01/2020",words[1]);
+            Database.addTransaction(t1, 1);
+            Database.addTransaction(t2, 1);
+            return successString;}
 
         // pre database code  if (payerMain.withdraw(amount)) {
         //      payeeMain.deposit(amount);
@@ -469,11 +462,16 @@ public class NewBank {
         if ((Database.EditBalance(accountFrom, customer.getKey(), -amount))) {
             if (Database.EditBalance(accountTo, customer.getKey(), amount)) {
                 Transaction t1 = new Transaction(-amount,"Funds moved");
+            //    t1.setTransParm();
                 Transaction t2 = new Transaction(amount, "Funds moved");
-                Account a1 = findCustomerAccount(customer, accountFrom);
-                Account a2 = findCustomerAccount(customer, accountTo);
-                a1.addTransaction(t1);
-                a2.addTransaction(t2);
+            //    Account a1 = findCustomerAccount(customer, accountFrom);
+           //     Account a2 = findCustomerAccount(customer, accountTo);
+         //       a1.addTransaction(t1);
+        //        a2.addTransaction(t2);
+                t1.setTransParm(accountFrom,"01/01/2020",customer.getKey());
+                t2.setTransParm(accountTo,"01/01/2020",customer.getKey());
+                Database.addTransaction(t1, 1);
+                Database.addTransaction(t2, 1);
                 return successString;
             } else {
                 //if the second transfer cannot be completed, add balance back
@@ -490,14 +488,14 @@ public class NewBank {
     }
 
     private Account findCustomerAccount(UserID customerID, String accountName) {
-
-        Customer customer = (Customer) users.get(customerID.getKey());
+      /*  Customer customer = (Customer) users.get(customerID.getKey());
 
         if (customer==null){
             return null;
         } else {
             return customer.getAccounts().get(accountName);
-        }
+        }*/
+     return Database.getAccount(customerID.getKey(),accountName);
 
     }
 
@@ -506,12 +504,14 @@ public class NewBank {
         String statement = "";
         Account statementAccount = null;
         for(int i = 0; i<words.length; i++){
-            if(i==0){
-                statementAccount = findCustomerAccount(customerID, "Main");
+           if(i==0){
+               return Database.showStatement(customerID.getKey(), "Main");
+                // I need to write a database method for this
             } else if (i==1){
-                statementAccount = findCustomerAccount(customerID, words[i]);
+               return Database.showStatement(customerID.getKey(),words[1]);
+                // database method for this
             }
-        }
+        } /*
         if (statementAccount == null){
             return "Error. Account could not be found";
         } else {
@@ -522,7 +522,9 @@ public class NewBank {
             i++;
             }
         }
-        return statement;
+        return statement;*/
+     //  return Database.showStatement(customerID.getKey());
+        return "error";
     }
 
     private String newAccount (UserID customerID, String request) {
