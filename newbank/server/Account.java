@@ -10,10 +10,18 @@ public class Account {
 
     private ArrayList<Transaction> transactions = new ArrayList<>();
 
-    public Account(String accountName, double openingBalance) {
+    public Account(String accountName, double openingBalance, String owner) {
         this.accountName = accountName;
         //this.openingBalance = openingBalance;
-        transactions.add(new Transaction(openingBalance, "opening"));
+        Transaction t = new Transaction(openingBalance, "opening");
+        transactions.add(t);
+        t.setTransParm(accountName,"01/01/20",owner);
+        Database.addTransaction(t,transactions.size());
+    }
+
+    public Account(String accountName, ArrayList<Transaction> transactions){
+        this.accountName = accountName;
+        this.transactions = transactions;
     }
 
     public void deposit(double amount) {
@@ -41,7 +49,7 @@ public class Account {
     }
 
     // get balance by summing transaction array element
-    private double getBalance(){
+    public double getBalance(){
         double sum = 0;
         for (int i=0; i<transactions.size(); i++){
             sum += transactions.get(i).getAmount();
@@ -56,14 +64,13 @@ public class Account {
     public String toString() {
         return (accountName + ": " + String.format("%.2f", getBalance()) + "\n");
     }
-
-    public void addTransaction(Transaction t){
-        transactions.add(t);
-        Database.addTransaction(t, transactions.size());
-    }
-
     public ArrayList<Transaction> getTransactions(){
         return transactions;
     }
+    public void addTransaction(Transaction transaction){
+        transactions.add(transaction);
+    }
+
+
 
 }
