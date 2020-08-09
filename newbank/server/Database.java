@@ -29,12 +29,12 @@ public class Database {
 
     public static void insertCustomer(String username, String password) {
         String sql = "INSERT INTO customers(username, password) values(?, ?)";
-        try {
-            Connection conn = Database.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.executeUpdate();
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -43,9 +43,8 @@ public class Database {
 
     public static void insertAdmin(String username, String password) {
         String sql = "INSERT INTO admin(username, password, userType) values(?, ?, ?)";
-        try {
-            Connection conn = Database.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, username);
             pstmt.setString(2, password);
             pstmt.setString(3, "admin");
@@ -57,9 +56,8 @@ public class Database {
 
     public static void insertAccount(double openingBalance, String accountName, String owner) {
         String sql = "INSERT INTO accounts(openingBalance, accountName, owner) values(?, ?, ?)";
-        try {
-            Connection conn = Database.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setDouble(1, openingBalance);
             pstmt.setString(2, accountName);
             pstmt.setString(3, owner);
@@ -91,9 +89,11 @@ public class Database {
 
     public static String showAllAccounts() {
         String sql = "SELECT * FROM accounts";
+
         try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
+
             // loop through the result set
             String accounts = "";
             while (rs.next()) {
@@ -113,9 +113,8 @@ public class Database {
     public static String showCustomerAccounts(String owner) {
         String sql = "SELECT * FROM accounts WHERE owner = ?";
 
-        try {
-            Connection conn = Database.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, owner);
             ResultSet rs = pstmt.executeQuery();
             // conn.close();
@@ -169,9 +168,8 @@ public class Database {
     public static ArrayList<String> showCustomerAccountsFormat(String owner) {
         String sql = "SELECT * FROM accounts WHERE owner = ?";
 
-        try {
-            Connection conn = Database.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, owner);
             ResultSet rs = pstmt.executeQuery();
             ArrayList<String> allAccounts = new ArrayList();
@@ -189,9 +187,8 @@ public class Database {
     public static void deleteAccount(String owner, String accountName) {
         String sql = "DELETE FROM accounts WHERE owner = ? AND accountName = ?";
 
-        try {
-            Connection conn = Database.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql);
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, owner);
             pstmt.setString(2, accountName);
             pstmt.executeUpdate();
@@ -227,9 +224,6 @@ public class Database {
 
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
-            //   System.out.println(rs.getString("username") +  "\t" +
-            //                rs.getString("password"));
-
             return rs.getString("password");
 
         } catch (SQLException e) {
@@ -289,7 +283,30 @@ public class Database {
             pstmt.setString(2, owner);
             pstmt.setString(3, accountName);
             pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
             return false;
+        }
+
+    }
+    public static boolean EditBalanceMove(String accountNameFrom,String accountNameTo, String owner, Double amount) {
+        double newBalance = 0;
+        boolean balanceCheck = Database.getBalance(accountNameFrom, owner) > amount;
+        if (!balanceCheck){
+            return false;
+        } else {
+            newBalance = Database.getBalance(accountNameTo, owner) + amount;
+        }
+        String sql = "UPDATE accounts SET openingBalance = ? WHERE owner = ? AND accountName = ?";
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDouble(1, newBalance);
+            pstmt.setString(2, owner);
+            pstmt.setString(3, accountNameTo);
+            pstmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
@@ -318,13 +335,14 @@ public class Database {
     public static String findCustomerAccount(String accountName, String owner) {
         String sql = "SELECT accountName = ? FROM accounts WHERE owner = ?";
 
-        try {
-        Connection conn = Database.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql);//{
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, accountName);
             pstmt.setString(2, owner);
             ResultSet rs = pstmt.executeQuery();
             return rs.toString();
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
 
@@ -410,5 +428,4 @@ public class Database {
 
     }
 }
-
 
