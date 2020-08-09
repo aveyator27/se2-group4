@@ -1,4 +1,4 @@
-package server;
+package newbank.server;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -6,38 +6,37 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 public class NewBank {
   
     private static final NewBank bank = new NewBank();
-    //private HashMap<String, Customer> customers;
-    //private HashMap<String, Admin> admins;
     private HashMap<String, User> users;
+    private static ArrayList<String> errorList;
 
     private static final String successString = "SUCCESS";
     private static final String failString = "FAIL";
 
     private NewBank() {
-        //customers = new HashMap<>();
-        //admins = new HashMap<>();
         users = new HashMap<>();
-        addTestData();
+        //addTestData();
     }
 
-    private void addTestData() {
+    /*private void addTestData() {
         Customer wayne = new Customer("1234");
-        wayne.addAccount(new Account("Main", 134));
-        wayne.addAccount(new Account("Savings", 89));
-        wayne.addAccount(new Account("testing", 1645));
         users.put("Wayne", wayne);
         Admin admin = new Admin("1234");
         users.put("Admin", admin);
         Admin mel = new Admin("mel");
         users.put("Mel", mel);
-    }
+    }*/
 
     public static NewBank getBank() {
         return bank;
+    }
+
+    public static ArrayList getErrorList(){
+        return errorList;
     }
 
     public synchronized UserID checkLogInDetails(String userName, String password) {
@@ -113,7 +112,7 @@ public class NewBank {
      * @param password is the user's chosen password
      * @return whether account was successfully created
      */
-    public synchronized boolean createCustomer(String userName, String password) {
+    public synchronized boolean createCustomer(String userName, String password, String passwordRepeat) {
         try {
             if(!isValidReg(userName, password, passwordRepeat)) {
                 return false;
@@ -127,6 +126,7 @@ public class NewBank {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     private String showAllCustomers(){
@@ -265,14 +265,7 @@ public class NewBank {
             Database.addTransaction(t1, 1);
             Database.addTransaction(t2, 1);
             return successString;}
-
-
-        if (payerMain.withdraw(amount)) {
-            payeeMain.deposit(amount);
-            return successString;
-        } else {
-            return failString;
-        }
+        return failString;
     }
 
     private String showCustomerStatement(UserID user, String request) {
@@ -296,10 +289,9 @@ public class NewBank {
 
 
     private String moveFunds(UserID customer, String request) {
-
         double amount = 0;
-        Account from = null;
-        Account to = null;
+        String accountFrom = null;
+        String accountTo = null;
 
         String[] words = request.split(" ");
 
@@ -313,28 +305,17 @@ public class NewBank {
                     System.out.println("Amount must be greater than zero");
                     return failString;
                 }
-                System.out.println("Amount: " + Double.toString(amount));
             } else if (i == 2) {
-                from = findCustomerAccount(customer, words[i]);
-                System.out.println("From: " + words[i]);
+                accountFrom = words[i];
             } else if (i == 3) {
-                to = findCustomerAccount(customer, words[i]);
-                System.out.println("To: " + words[i]);
+                accountTo = words[i];
             }
         }
 
-        if (from == null || to == null) {
-            System.out.println("Error: Request incomplete.");
-            return failString;
+        if (accountFrom == null || accountTo == null) {
+            return "Error: Request incomplete.";
         }
 
-        if (from.withdraw(amount)) {
-            to.deposit(amount);
-            return successString;
-        } else {
-            return failString;
-        }
-//
         if ((Database.EditBalance(accountFrom, customer.getKey(), -amount))) {
             if (Database.EditBalance(accountTo, customer.getKey(), amount)) {
                 Transaction t1 = new Transaction(-amount,"Funds moved");
@@ -403,38 +384,78 @@ public class NewBank {
         //  return Database.showStatement(customerID.getKey());
         return "error";*/
     }
-
     private String newAccount (UserID customerID, String request) {
-
-    	for (int i = 0; i < words.length; i++){
-
-    	    if (i==0){
-    	        // ignore the command word
+        String[] words = request.split(" ");
+        for (int i = 0; i < words.length; i++) {
+            if (i == 0) {
+                // ignore the command word
                 continue;
-    	    } else if (i==1){
-
+            } else if (i == 1) {
                 // Second word from split string is accountName
-    	        String accountName = words[i];
-
-    	        System.out.println("New Account Name: " + accountName);
-
-    	        Customer customer = (Customer) users.get(customerID.getKey());
-    				
-    	        if (customer.getAccounts().get(accountName)==null){
-    	            customer.addAccount(new Account(accountName, 0));
-
-    	            return successString;
-
-    	        } else {
-    	            return failString;
-    	        }
-
-    	    } else if (i>=2){
-    	        System.out.println("Account name must only contain one word");
-    	        return failString;
-    	    }
-    	}
-
-    	return failString;
+                String accountName = words[i];
+                // Need to check for non conflicting
+                System.out.println("New Account Name: " + accountName);
+                //   Customer customer = (Customer) users.get(customerID.getKey());
+                //check that not existing account name
+                if (!Database.showCustomerAccounts(customerID.getKey()).contains(accountName)) {
+                    // customer.addAccount(new Account(accountName, 0));
+                    Database.insertAccount(0.00, accountName, customerID.getKey());
+                    return successString;
+                } else {
+                    return failString;
+                }
+        /*if (customer.getAccounts().get(accountName)==null){   pre database code
+            customer.addAccount(new Account(accountName, 0));
+            return successString;
+        } else {
+            return failString;
+        }*/
+            } else if (i >= 2) {
+                System.out.println("Account name must only contain one word");
+                return failString;
+            }
+        }
+        return failString;
     }
+
+    public synchronized boolean isValidReg(String username, String password, String passwordRepeat){
+        boolean validReg = true;
+        errorList.clear();
+        //List<String> errorList = new ArrayList<String>();
+        Pattern specialCharPatten = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        Pattern UpperCasePatten = Pattern.compile("[A-Z ]");
+        Pattern lowerCasePatten = Pattern.compile("[a-z ]");
+        Pattern digitCasePatten = Pattern.compile("[0-9 ]");
+        if (isExistingUser(username)){
+            errorList.add("User already exists.");
+            validReg = false;
+        }
+        if (!password.equals(passwordRepeat)) {
+            errorList.add("Passwords do not match.");
+            validReg = false;
+        }
+        if (password.length() < 8) {
+            errorList.add("Password length must contain at least eight characters.");
+            validReg = false;
+        }
+        if (!specialCharPatten.matcher(password).find()) {
+            errorList.add("The password must contain at least one special character.");
+            validReg = false;
+        }
+        if (!UpperCasePatten.matcher(password).find()) {
+            errorList.add("The password must contain at least one upper case character.");
+            validReg = false;
+        }
+        if (!lowerCasePatten.matcher(password).find()) {
+            errorList.add("The password must contain at least one lower case character.");
+            validReg = false;
+        }
+        if (!digitCasePatten.matcher(password).find()) {
+            errorList.add("The password must contain at least one digit 0-9.");
+            validReg = false;
+        }
+        return validReg;
+    }
+
+
 }

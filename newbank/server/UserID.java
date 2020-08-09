@@ -1,4 +1,4 @@
-package server;
+package newbank.server;
 
 public class UserID {
     private String key;

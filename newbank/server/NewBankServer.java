@@ -1,4 +1,4 @@
-package server;
+package newbank.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,8 +12,10 @@ public class NewBankServer extends Thread {
         server = new ServerSocket(port);
     }
 
+    /**
+     * starts up a new client handler thread to receive incoming connections and process requests
+     */
     public void run() {
-        // starts up a new client handler thread to receive incoming connections and process requests
         System.out.println("New Bank Server listening on " + server.getLocalPort());
         try {
             while (true) {

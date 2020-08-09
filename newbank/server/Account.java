@@ -1,4 +1,4 @@
-package server;
+package newbank.server;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -29,7 +29,7 @@ public class Account {
     public void deposit(double amount) {
 
         //openingBalance = openingBalance + amount;
-        transactions.add(new Transaction(amount, "deposit", getDateTime()));
+        transactions.add(new Transaction(amount, "deposit"));
 
     }
 
@@ -38,7 +38,7 @@ public class Account {
             System.out.println("Insufficient funds in account");
             return false;
         } else{
-            transactions.add(new Transaction((amount * (-1)), "withdrawal", getDateTime()));
+            transactions.add(new Transaction((amount * (-1)), "withdrawal"));
             return true;
         }
         /*if (openingBalance < amount) {
@@ -66,7 +66,7 @@ public class Account {
         return ts;
     }
 
-    /**
+    /** Alternative attempt with TimeStamp
      * call from NewBank showBalanceHistory
     public double getBalanceHistory(Timestamp dateTime){
         double sum = 0;

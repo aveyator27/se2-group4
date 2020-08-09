@@ -1,4 +1,4 @@
-package server;
+package newbank.server;
 
 public class Loan {
     private String loanName;

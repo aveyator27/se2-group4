@@ -1,4 +1,4 @@
-package server;
+package newbank.server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -320,7 +320,7 @@ public class Database {
 
         try {
         Connection conn = Database.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql);{
+             PreparedStatement pstmt = conn.prepareStatement(sql);//{
             pstmt.setString(1, accountName);
             pstmt.setString(2, owner);
             ResultSet rs = pstmt.executeQuery();
