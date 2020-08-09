@@ -62,6 +62,7 @@ public class Database {
             pstmt.setString(2, accountName);
             pstmt.setString(3, owner);
             pstmt.executeUpdate();
+            Account a = new Account(accountName,0.00, owner);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -90,7 +91,7 @@ public class Database {
         String sql = "SELECT * FROM accounts";
 
         try (Connection conn = Database.connect();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
 
             // loop through the result set
@@ -337,10 +338,10 @@ public class Database {
         try (Connection conn = Database.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-                pstmt.setString(1, accountName);
-                pstmt.setString(2, owner);
-                ResultSet rs = pstmt.executeQuery();
-                return rs.toString();
+            pstmt.setString(1, accountName);
+            pstmt.setString(2, owner);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.toString();
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -354,7 +355,7 @@ public class Database {
         String accountname = t.getAccount();
         Double amount = t.getAmount();
         String ref = t.getRef();
-        String account = t.getAccount();
+        String account = t.getRecipientAccount();
         String date = t.getDate();
         String customer = t.getRecipient();
         String sql = "INSERT INTO transactions(customerName, accountName, t_index, t_amount, t_Ref, t_Customer, t_Account, t_Date) values(?, ?, ?, ?, ?, ?, ?, ?)";
@@ -388,8 +389,8 @@ public class Database {
             while (rs.next()) {
                 // add the transaction to the ArrayList
                 //...
-               Transaction t = new Transaction(rs.getDouble("Double"), rs.getString("t_Ref"));
-               transactions.add(t);
+                Transaction t = new Transaction(rs.getDouble("Double"), rs.getString("t_Ref"));
+                transactions.add(t);
             }
             return new Account(accountName, transactions);
         } catch (SQLException e) {
@@ -409,12 +410,11 @@ public class Database {
             while (rs.next()) {
                 statement += rs.getString("customerName") + ": "
                         + rs.getString("accountName") + ": "
-                        + rs.getInt("t_index") + ": "
                         + rs.getString("t_amount") + ": "
                         + rs.getString("t_Ref") + ": " +
-                          rs.getString("t_Customer") + ": " +
+                        rs.getString("t_Customer") + ": " +
                         rs.getString("t_Account") + ": " +
-                          rs.getString("t_Date")
+                        rs.getString("t_Date")
                         + "\n";
                 //    + rs.getString("t_Customer") + ": "
                 //    + rs.getString("t_Account") + ": "
