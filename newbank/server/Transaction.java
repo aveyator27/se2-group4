@@ -50,4 +50,9 @@ public class Transaction {
         return t_Recipient;
     }
 
+    public void setTransParm(String account, String date , String Customer){
+        this.setAccount(account);
+        this.setDate(date);
+        this.setCustomer(Customer); }
 }
+
