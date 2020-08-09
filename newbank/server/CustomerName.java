@@ -1,9 +1,9 @@
-package newbank.server;
+package server;
 
 public class CustomerName {
     private String name;
 
-    public CustomerName(String naem) {
+    public CustomerName(String name) {
         this.name = name;
     }
 

@@ -1,8 +1,9 @@
 package server;
 
-import server.Account;
-
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -179,6 +180,30 @@ public class NewBank {
     private String showMyAccounts(UserID customer) {
         return (users.get(customer.getKey())).accountsToString();
     }
+
+    /**
+     * aim was to show the balance at a particular time in history
+     * take user input of timestamp and use logic in Account.java getBalanceHistory
+     * return the sum of transactions before this specified point
+     *
+     * add to the switch menu for customer
+     *
+    private String showBalanceHistory(UserID customer, String request){
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
+            Date parsedDate = dateFormat.parse(request);
+            Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+        } catch(Exception e) {
+            System.out.println("This input was not in the correct format");
+            return failString;
+        }
+
+        findCustomerAccount().getBalanceHistory();
+
+
+    }
+     */
 
     /**
      * creates a help message for a customer

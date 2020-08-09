@@ -1,4 +1,7 @@
 package server;
+
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.ArrayList;
 
 public class Account {
@@ -7,18 +10,23 @@ public class Account {
 
     //private double openingBalance;
 
-    private ArrayList<Transaction> transactions;
+    private ArrayList<Transaction> transactions = new ArrayList<>();
 
     public Account(String accountName, double openingBalance) {
         this.accountName = accountName;
         //this.openingBalance = openingBalance;
-        transactions.add(new Transaction(openingBalance, "opening"));
+        transactions.add(new Transaction(openingBalance, "opening", getDateTime()));
+    }
+
+    public Account(String accountName, ArrayList<Transaction> transactions){
+        this.accountName = accountName;
+        this.transactions = transactions;
     }
 
     public void deposit(double amount) {
 
         //openingBalance = openingBalance + amount;
-        transactions.add(new Transaction(amount, "deposit"));
+        transactions.add(new Transaction(amount, "deposit", getDateTime()));
 
     }
 
@@ -27,7 +35,7 @@ public class Account {
             System.out.println("Insufficient funds in account");
             return false;
         } else{
-            transactions.add(new Transaction((amount * (-1)), "withdrawal"));
+            transactions.add(new Transaction((amount * (-1)), "withdrawal", getDateTime()));
             return true;
         }
         /*if (openingBalance < amount) {
@@ -40,13 +48,36 @@ public class Account {
     }
 
     // get balance by summing transaction array element
-    private double getBalance(){
+    public double getBalance(){
         double sum = 0;
         for (int i=0; i<transactions.size(); i++){
             sum += transactions.get(i).getAmount();
         }
         return sum;
     }
+
+    public Timestamp getDateTime(){
+        Date date = new Date();
+        long time = date.getTime();
+        Timestamp ts = new Timestamp(time);
+        return ts;
+    }
+
+    /**
+     * call from NewBank showBalanceHistory
+    public double getBalanceHistory(Timestamp dateTime){
+        double sum = 0;
+        //Timestamp markerTime = GET THIS FROM USER;
+        for (int i=0; i< transactions.size(); i++){
+            if (dateTime.before(markerTime)){
+                sum += transactions.get(i).getAmount();
+            }
+            else{
+                continue;
+            }
+        }
+        return sum;
+    }*/
 
     public String getAccountName() {
         return accountName;
