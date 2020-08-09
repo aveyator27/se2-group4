@@ -2,18 +2,48 @@ This document details the protocol for interacting with the NewBank server.
 
 A customer enters the command below and sees the messages returned 
 
+Customer Commands
+
 SHOWMYACCOUNTS
-Returns a list of all the customers accounts along with their current balance 
-e.g. Main: 1000.0 
+Returns a list of all the customers accounts along with their current balance from the database.  
+e.g. SAVINGS: 910.0: Bhagy 
 
 NEWACCOUNT <Name>
 e.g. NEWACCOUNT Savings
-Returns SUCCESS or FAIL
+Returns SUCCESS or FAIL, if success adds the new account into the accounts table.
+And a new transaction to record the account being opened with 0 balance is recorded in the 
+transactions table. 
 
 MOVE <Amount> <From> <To>
 e.g. MOVE 100 Main Savings 
 Returns SUCCESS or FAIL
+if success edits the balance of the respective accounts in the database accounts table.
+And records the transactions in the transactions table. 
 
 PAY <Person/Company> <Ammount>
 e.g. PAY John 100
 Returns SUCCESS or FAIL
+if success edits the balance of the respective accounts in the database accounts table.
+And records the transactions in the transactions table. 
+
+PRINTSTATEMENT <accountname>
+(if left empty accountname defaults to main)
+e.g. PRINTSTATEMENT Savings
+Returns SUCCESS or FAIL
+if success prints out the transactions data for that account from 
+the transactions table. 
+
+Admin Commands
+
+SHOWCUSTOMERS
+Returns SUCCESS or FAIL
+
+SHOWACCOUNTS 
+Returns SUCCESS or FAIL
+
+SHOWSTATEMENT <customer name>
+e.g. SHOWSTATEMENT Bhagy
+Returns SUCCESS or FAIL
+if success prints out their accounts and balances e.g
+SAVINGS: 910.0: Bhagy
+
