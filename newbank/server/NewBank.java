@@ -1,12 +1,13 @@
 package newbank.server;
 
-import javax.xml.crypto.Data;
+//import javax.xml.crypto.Data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Set;
+//import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
-import java.io.PrintWriter;
+//import java.io.PrintWriter;
 
 public class NewBank {
 
@@ -106,6 +107,8 @@ public class NewBank {
                     return sendMoney(customer, request);
                 case "NEWACCOUNT":
                     return newAccount(customer,request);
+                case "SHOWOFFEREDLOANS":
+                    return showOfferedLoans(customer);
                 case "PRINTSTATEMENT":
                     return printStatement(customer, request);
                 default:
@@ -448,4 +451,37 @@ public class NewBank {
 
         return failString;
     }
+
+    private String showOfferedLoans(UserID customerID){
+
+        Set<String> keySet = users.keySet();
+
+        String output = "";
+
+        for (String userName : keySet){
+
+            if (users.get(userName).userType.equals("customer")){
+
+                Customer customer = (Customer) users.get(userName);
+
+                Account offeredLoanAccount = customer.getAccounts().get("OfferLoan");
+
+                if (offeredLoanAccount==null){
+                    continue;
+                }
+
+                output = output + "User: " + userName + "; Amount: " + String.format("%.2f", offeredLoanAccount.getBalance());
+
+            }
+
+        }
+
+        if (output==null || output.isEmpty() || output.equals("")){
+            return failString;
+        } else{
+            return output;
+        }
+
+    }
+
 }
