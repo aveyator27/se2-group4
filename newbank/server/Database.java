@@ -356,8 +356,8 @@ public class Database {
         String ref = t.getRef();
         String account = t.getAccount();
         String date = t.getDate();
-        String customer = t.getCustomer();
-        String sql = "INSERT INTO transactions(customerName, accountName, t_index, t_amount, t_Ref, t_Customer, t_Account, t_Date,t_otherParty) values(?, ?, ?, ?, ?, ?, ?, ?,?)";
+        String customer = t.getRecipient();
+        String sql = "INSERT INTO transactions(customerName, accountName, t_index, t_amount, t_Ref, t_Customer, t_Account, t_Date) values(?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = Database.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, customername);
@@ -412,7 +412,8 @@ public class Database {
                         + rs.getInt("t_index") + ": "
                         + rs.getString("t_amount") + ": "
                         + rs.getString("t_Ref") + ": " +
-                          rs.getString("t_otherParty") + ": " +
+                          rs.getString("t_Customer") + ": " +
+                        rs.getString("t_Account") + ": " +
                           rs.getString("t_Date")
                         + "\n";
                 //    + rs.getString("t_Customer") + ": "
