@@ -325,7 +325,8 @@ public class NewBank {
         Boolean balance = true;
         String[] words = request.split(" ");
         double amount = 0;
-        Customer payee = null;
+        String payee = "";
+        String payeeAccount = "";
         // pre database code Customer payer = (Customer) users.get(payerID.getKey());
 
         // pre database code  if (payer==null){
@@ -354,10 +355,14 @@ public class NewBank {
                 // pre database code     payee = (Customer) users.get(words[i]);
                 if (Database.findCustomerUsername(words[i]) == null ){
                     return "Error: Payee not found.";
+                } else {
+                    payee = words[i];
                 }
                 // pre database code payeeMain = payee.getAccounts().get("Main");
                 if (Database.findCustomerAccount("Main",words[i]) == null ){
                     return "Error: Payee's Main Account not found.";
+                } else {
+                    payeeAccount = "Main";
                 }
             } else if (i == 2) {
                 amount = Double.valueOf(words[i]);
@@ -371,8 +376,9 @@ public class NewBank {
             Database.EditBalance("Main", payerID.getKey(), -amount);
             Transaction t1 = new Transaction(-amount,"Paying");
             Transaction t2 = new Transaction(amount, "Paying");
-            t1.setTransParm("Main","01/01/2020",payerID.getKey());
-            t2.setTransParm("Main","01/01/2020",words[1]);
+            String currentDate = ""+java.time.LocalDate.now();
+            t1.setTransParm("Main",currentDate,payee);
+            t2.setTransParm("Main",currentDate,payerID.getKey());
             Database.addTransaction(t1, 1);
             Database.addTransaction(t2, 1);
             return successString;}
@@ -468,8 +474,9 @@ public class NewBank {
            //     Account a2 = findCustomerAccount(customer, accountTo);
          //       a1.addTransaction(t1);
         //        a2.addTransaction(t2);
-                t1.setTransParm(accountFrom,"01/01/2020",customer.getKey());
-                t2.setTransParm(accountTo,"01/01/2020",customer.getKey());
+                String currentDate = ""+java.time.LocalDate.now();
+                t1.setTransParm(accountFrom,currentDate,customer.getKey());
+                t2.setTransParm(accountTo,currentDate,customer.getKey());
                 Database.addTransaction(t1, 1);
                 Database.addTransaction(t2, 1);
                 return successString;
