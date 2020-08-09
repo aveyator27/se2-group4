@@ -14,9 +14,9 @@ public class Account {
         this.accountName = accountName;
         //this.openingBalance = openingBalance;
         Transaction t = new Transaction(openingBalance, "opening");
-        transactions.add(t);
-        t.setTransParm(accountName,"01/01/20",owner);
-        Database.addTransaction(t,transactions.size());
+        String currentDate = ""+java.time.LocalDate.now();
+        t.setTransParm(accountName,currentDate,owner,"not applicable","not applicable");
+        Database.addTransaction(t,1);
     }
 
     public Account(String accountName, ArrayList<Transaction> transactions){
