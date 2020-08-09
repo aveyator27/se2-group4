@@ -1,24 +1,29 @@
-package newbank.server;
+package server;
+
+import java.sql.Timestamp;
 
 public class Transaction {
     double t_Amount;
+    double t_AmountHistory;
     String t_Ref;
     String t_Customer;
     String t_Account;
+    Timestamp t_DateTime;
     String t_Date;
     String t_Recipient;
     String t_recipientAccount;
 
-    public Transaction(double amount, String reference){
+    public Transaction(double amount, String reference, Timestamp dateTime){
         t_Amount=amount;
         t_Ref=reference;
+        t_DateTime=dateTime;
     }
 
-    public String getDate(){
-        return t_Date;
+    public Timestamp getDate(){
+        return t_DateTime;
     }
-    public void setDate(String date){
-        this.t_Date = date;
+    public void setDate(Timestamp dateTime){
+        this.t_DateTime = dateTime;
     }
 
     public String getCustomer(){
@@ -41,6 +46,9 @@ public class Transaction {
     public void setAmount(double amount){
         this.t_Amount = amount;
     }
+
+    public double getAmountHistory(){ return t_AmountHistory; }
+    public void setAmountHistory(double amount, Timestamp dateTime){ this.t_Amount=amount; }
 
     public String getRef(){
         return t_Ref;
