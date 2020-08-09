@@ -69,16 +69,14 @@ public class Database {
 
     public static String showAllCustomers() {
         String sql = "SELECT * FROM customers";
-
+        String customers = "";
         try (Connection conn = Database.connect();
-             Statement stmt = conn.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery(sql);
-
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
             // loop through the result set
-            String customers = "";
+
             while (rs.next()) {
-                customers += "username :" + (rs.getString("username") + ": " +
-                        "password" + ": " + rs.getString("password")) + "\n";
+                customers += "username :" + (rs.getString("username")) + "\n";
             }
             return customers;
         } catch (SQLException e) {
@@ -92,13 +90,13 @@ public class Database {
         String sql = "SELECT * FROM accounts";
 
         try (Connection conn = Database.connect();
-             Statement stmt = conn.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery(sql);
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
 
             // loop through the result set
             String accounts = "";
             while (rs.next()) {
-                accounts += "openingBalance :" + (rs.getString("openingBalance") + ": " +
+                accounts += "Balance :" + (rs.getString("openingBalance") + ": " +
                         "accountName" + ": " + rs.getString("accountName")) + ": "
                         + "owner" + ": " + rs.getString("owner") + "\n";
             }
@@ -359,7 +357,7 @@ public class Database {
         String account = t.getAccount();
         String date = t.getDate();
         String customer = t.getCustomer();
-        String sql = "INSERT INTO transactions(customerName, accountName, t_index, t_amount, t_Ref, t_Customer, t_Account, t_Date) values(?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO transactions(customerName, accountName, t_index, t_amount, t_Ref, t_Customer, t_Account, t_Date,t_otherParty) values(?, ?, ?, ?, ?, ?, ?, ?,?)";
         try (Connection conn = Database.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, customername);
@@ -413,11 +411,12 @@ public class Database {
                         + rs.getString("accountName") + ": "
                         + rs.getInt("t_index") + ": "
                         + rs.getString("t_amount") + ": "
-                        + rs.getString("t_Ref") + ": "
-                        + rs.getString("t_Customer") + ": "
-                        + rs.getString("t_Account") + ": "
-                        + rs.getString("t_Date")
+                        + rs.getString("t_Ref") + ": " +
+                          rs.getString("t_otherParty") + ": " +
+                          rs.getString("t_Date")
                         + "\n";
+                //    + rs.getString("t_Customer") + ": "
+                //    + rs.getString("t_Account") + ": "
 
             }
             return statement;
