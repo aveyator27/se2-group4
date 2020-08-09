@@ -7,6 +7,7 @@ public class Transaction {
     String t_Account;
     String t_Date;
     String t_Recipient;
+    String t_recipientAccount;
 
     public Transaction(double amount, String reference){
         t_Amount=amount;
@@ -49,10 +50,18 @@ public class Transaction {
     public String getRecipient() {
         return t_Recipient;
     }
+    public void setRecipient(String recipient){ this.t_Recipient = recipient; }
 
-    public void setTransParm(String account, String date , String Customer){
+    public String getRecipientAccount() {
+        return t_recipientAccount;
+    }
+    public void setRecipientAccount(String recipientAccount){ this.t_recipientAccount = recipientAccount; }
+
+    public void setTransParm(String account, String date , String Customer, String recipient, String t_recipientAccount){
         this.setAccount(account);
         this.setDate(date);
-        this.setCustomer(Customer); }
+        this.setRecipient(recipient);
+        this.setCustomer(Customer);
+        this.setRecipientAccount(t_recipientAccount);
+        }
 }
-
