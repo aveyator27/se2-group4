@@ -38,8 +38,6 @@ public class NewBank {
         users.put("Bhagy", bhagy);
         //    Database.insertCustomer("Bhagy", "1234");
         //   Database.showCustomerAccounts("Christina");
-
-
         Customer christina = new Customer("Tina01");
         christina.addAccount(new Account("Main", 800.0));
         christina.addAccount(new Account("Savings", 1500.0));
@@ -48,7 +46,6 @@ public class NewBank {
         users.put("Christina", christina);
         //    Database.insertCustomer("Christina", "Tina01");
         //   Database.findCustomerUsername("Christina");
-
         Customer john = new Customer("JohnDoe");
         john.addAccount(new Account("Main", 800.0));
         john.addAccount(new Account("Checking", 250.0));
@@ -64,13 +61,11 @@ public class NewBank {
         //   Database.deleteAccount("Marc","Main");
         //    Database.EditBalance("Main", "1234",100.00);
         //    Database.EditBalance("Main", "123",100.00);
-
         Customer wayne = new Customer("1234");
         wayne.addAccount(new Account("Main", 134));
         wayne.addAccount(new Account("Savings", 89));
         wayne.addAccount(new Account("testing", 1645));
         users.put("Wayne", wayne);
-
         Admin admin = new Admin("1234");
         users.put("Admin", admin);
         Admin mel = new Admin("mel");
@@ -235,13 +230,13 @@ public class NewBank {
     public synchronized boolean createCustomer(String userName, String password, String passwordRepeat) {
         try {
             if(!isValidReg(userName, password, passwordRepeat)) {
-                    return false;
-                } else {
-                    //users.put(userName, customer);
-                    Database.insertCustomer(userName, password);
-                    Database.insertAccount(0.0, "Main", userName);
-                    return true;
-                }
+                return false;
+            } else {
+                //users.put(userName, customer);
+                Database.insertCustomer(userName, password);
+                Database.insertAccount(0.0, "Main", userName);
+                return true;
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -377,8 +372,8 @@ public class NewBank {
             Transaction t1 = new Transaction(-amount,"Paying");
             Transaction t2 = new Transaction(amount, "Paying");
             String currentDate = ""+java.time.LocalDate.now();
-            t1.setTransParm("Main",currentDate,payee);
-            t2.setTransParm("Main",currentDate,payerID.getKey());
+            t1.setTransParm("Main",currentDate,payee,payerID.getKey(),"Main");
+            t2.setTransParm("Main",currentDate,payerID.getKey(),payee,"Main");
             Database.addTransaction(t1, 1);
             Database.addTransaction(t2, 1);
             return successString;}
@@ -468,15 +463,15 @@ public class NewBank {
         if ((Database.EditBalance(accountFrom, customer.getKey(), -amount))) {
             if (Database.EditBalance(accountTo, customer.getKey(), amount)) {
                 Transaction t1 = new Transaction(-amount,"Funds moved");
-            //    t1.setTransParm();
+                //    t1.setTransParm();
                 Transaction t2 = new Transaction(amount, "Funds moved");
-            //    Account a1 = findCustomerAccount(customer, accountFrom);
-           //     Account a2 = findCustomerAccount(customer, accountTo);
-         //       a1.addTransaction(t1);
-        //        a2.addTransaction(t2);
+                //    Account a1 = findCustomerAccount(customer, accountFrom);
+                //     Account a2 = findCustomerAccount(customer, accountTo);
+                //       a1.addTransaction(t1);
+                //        a2.addTransaction(t2);
                 String currentDate = ""+java.time.LocalDate.now();
-                t1.setTransParm(accountFrom,currentDate,customer.getKey());
-                t2.setTransParm(accountTo,currentDate,customer.getKey());
+                t1.setTransParm(accountFrom,currentDate,customer.getKey(),customer.getKey(),accountTo);
+                t2.setTransParm(accountTo,currentDate,customer.getKey(),customer.getKey(),accountFrom);
                 Database.addTransaction(t1, 1);
                 Database.addTransaction(t2, 1);
                 return successString;
@@ -496,13 +491,12 @@ public class NewBank {
 
     private Account findCustomerAccount(UserID customerID, String accountName) {
       /*  Customer customer = (Customer) users.get(customerID.getKey());
-
         if (customer==null){
             return null;
         } else {
             return customer.getAccounts().get(accountName);
         }*/
-     return Database.getAccount(customerID.getKey(),accountName);
+        return Database.getAccount(customerID.getKey(),accountName);
 
     }
 
@@ -511,15 +505,17 @@ public class NewBank {
         String statement = "";
         Account statementAccount = null;
         for(int i = 0; i<words.length; i++){
-           if(i==0){
-               return Database.showStatement(customerID.getKey(), "Main");
+            if(i==0){
+                statement = Database.showStatement(customerID.getKey(), "Main");
                 // I need to write a database method for this
             } else if (i==1){
-               return Database.showStatement(customerID.getKey(),words[1]);
+                statement = Database.showStatement(customerID.getKey(),words[1]);
                 // database method for this
             }
-        } /*
-        if (statementAccount == null){
+
+        }
+         return  statement;
+     /*   if (statementAccount == null){
             return "Error. Account could not be found";
         } else {
             ArrayList<Transaction> transactions = statementAccount.getTransactions();
@@ -529,9 +525,9 @@ public class NewBank {
             i++;
             }
         }
-        return statement;*/
-     //  return Database.showStatement(customerID.getKey());
-        return "error";
+        return statement;
+        //  return Database.showStatement(customerID.getKey());
+        return "error";*/
     }
 
     private String newAccount (UserID customerID, String request) {
