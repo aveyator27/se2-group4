@@ -12,10 +12,13 @@ public class Account {
 
     private ArrayList<Transaction> transactions = new ArrayList<>();
 
-    public Account(String accountName, double openingBalance) {
+    public Account(String accountName, double openingBalance, String owner) {
         this.accountName = accountName;
         //this.openingBalance = openingBalance;
-        transactions.add(new Transaction(openingBalance, "opening", getDateTime()));
+        Transaction t = new Transaction(openingBalance, "opening");
+        String currentDate = ""+java.time.LocalDate.now();
+        t.setTransParm(accountName,currentDate,owner,"not applicable","not applicable");
+        Database.addTransaction(t,1);
     }
 
     public Account(String accountName, ArrayList<Transaction> transactions){
@@ -86,5 +89,14 @@ public class Account {
     public String toString() {
         return (accountName + ": " + String.format("%.2f", getBalance()) + "\n");
     }
+
+    public ArrayList<Transaction> getTransactions(){
+        return transactions;
+    }
+    public void addTransaction(Transaction transaction){
+        transactions.add(transaction);
+    }
+
+
 
 }

@@ -9,6 +9,9 @@ public class Transaction {
     String t_Customer;
     String t_Account;
     Timestamp t_DateTime;
+    String t_Date;
+    String t_Recipient;
+    String t_recipientAccount;
 
     public Transaction(double amount, String reference, Timestamp dateTime){
         t_Amount=amount;
@@ -52,4 +55,21 @@ public class Transaction {
     }
     public void setRef(String ref){ this.t_Ref = ref; }
 
+    public String getRecipient() {
+        return t_Recipient;
+    }
+    public void setRecipient(String recipient){ this.t_Recipient = recipient; }
+
+    public String getRecipientAccount() {
+        return t_recipientAccount;
+    }
+    public void setRecipientAccount(String recipientAccount){ this.t_recipientAccount = recipientAccount; }
+
+    public void setTransParm(String account, String date , String Customer, String recipient, String t_recipientAccount){
+        this.setAccount(account);
+        this.setDate(date);
+        this.setRecipient(recipient);
+        this.setCustomer(Customer);
+        this.setRecipientAccount(t_recipientAccount);
+        }
 }

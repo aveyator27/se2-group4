@@ -64,6 +64,7 @@ public class Database {
             pstmt.setString(2, accountName);
             pstmt.setString(3, owner);
             pstmt.executeUpdate();
+            Account a = new Account(accountName,0.00, owner);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -71,17 +72,14 @@ public class Database {
 
     public static String showAllCustomers() {
         String sql = "SELECT * FROM customers";
-
-        try {
-            Connection conn = Database.connect();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
+        String customers = "";
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
             // loop through the result set
-            String customers = "";
+
             while (rs.next()) {
-                customers += "username :" + (rs.getString("username") + ": " +
-                        "password" + ": " + rs.getString("password")) + "\n";
+                customers += "username :" + (rs.getString("username")) + "\n";
             }
             return customers;
         } catch (SQLException e) {
@@ -93,16 +91,13 @@ public class Database {
 
     public static String showAllAccounts() {
         String sql = "SELECT * FROM accounts";
-
-        try {
-            Connection conn = Database.connect();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
-
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
             // loop through the result set
             String accounts = "";
             while (rs.next()) {
-                accounts += "openingBalance :" + (rs.getString("openingBalance") + ": " +
+                accounts += "Balance :" + (rs.getString("openingBalance") + ": " +
                         "accountName" + ": " + rs.getString("accountName")) + ": "
                         + "owner" + ": " + rs.getString("owner") + "\n";
             }
@@ -135,6 +130,33 @@ public class Database {
                 allAccounts += rs.getString("accountName") + ": "
                         + rs.getDouble("openingBalance") + ": "
                         + rs.getString("owner") + "\n";
+            }
+            return allAccounts;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+
+    }
+    public static String showCustomerAccountsCreation(String owner) {
+        String sql = "SELECT * FROM accounts WHERE owner = ?";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, owner);
+            ResultSet rs = pstmt.executeQuery();
+            // conn.close();
+            // loop through the result set
+            String allAccounts = "";
+         /*   while (rs.next()) {
+                System.out.println(rs.getDouble("openingBalance") + "|" +
+                        rs.getString("accountName") + "|" +
+                        rs.getString("owner"));
+            }*/
+            while (rs.next()) {
+                allAccounts += rs.getString("accountName")
+                        + rs.getDouble("openingBalance")
+                        + rs.getString("owner");
             }
             return allAccounts;
         } catch (SQLException e) {
@@ -299,17 +321,93 @@ public class Database {
         try {
         Connection conn = Database.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql);{
-
-                pstmt.setString(1, accountName);
-                pstmt.setString(2, owner);
-                ResultSet rs = pstmt.executeQuery();
-                return rs.toString();
-            }
+            pstmt.setString(1, accountName);
+            pstmt.setString(2, owner);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.toString();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
 
         }
         return null;
+    }
+
+    public static void addTransaction(Transaction t, int index){
+        String customername = t.getCustomer();
+        String accountname = t.getAccount();
+        Double amount = t.getAmount();
+        String ref = t.getRef();
+        String account = t.getRecipientAccount();
+        String date = t.getDate();
+        String customer = t.getRecipient();
+        String sql = "INSERT INTO transactions(customerName, accountName, t_index, t_amount, t_Ref, t_Customer, t_Account, t_Date) values(?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, customername);
+            pstmt.setString(2, accountname);
+            pstmt.setInt(3, index);
+            pstmt.setDouble(4, amount);
+            pstmt.setString(5,ref);
+            pstmt.setString(6,customer);
+            pstmt.setString(7,account);
+            pstmt.setString(8,date);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage()); }
+    }
+
+    public static Account getAccount(String customerName, String accountName){
+        String sql = "SELECT * FROM transactions WHERE CustomerName = ? AND AccountName = ?";
+        try {
+            Connection conn = Database.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, customerName);
+            pstmt.setString(2, accountName);
+            ResultSet rs = pstmt.executeQuery();
+            ArrayList<Transaction> transactions = new ArrayList<>();
+            if (rs==null){
+                return null;
+            }
+            while (rs.next()) {
+                // add the transaction to the ArrayList
+                //...
+                Transaction t = new Transaction(rs.getDouble("Double"), rs.getString("t_Ref"));
+                transactions.add(t);
+            }
+            return new Account(accountName, transactions);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+    public static String showStatement(String customer, String account) {
+        String sql = "SELECT * FROM transactions WHERE customerName = ? AND accountName = ?";
+
+        try (Connection conn = Database.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, customer);
+            pstmt.setString(2,account);
+            ResultSet rs = pstmt.executeQuery();
+            String statement = "";
+            while (rs.next()) {
+                statement += rs.getString("customerName") + ": "
+                        + rs.getString("accountName") + ": "
+                        + rs.getString("t_amount") + ": "
+                        + rs.getString("t_Ref") + ": " +
+                        rs.getString("t_Customer") + ": " +
+                        rs.getString("t_Account") + ": " +
+                        rs.getString("t_Date")
+                        + "\n";
+                //    + rs.getString("t_Customer") + ": "
+                //    + rs.getString("t_Account") + ": "
+
+            }
+            return statement;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+
     }
 }
 
