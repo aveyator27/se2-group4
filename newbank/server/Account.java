@@ -8,31 +8,46 @@ public class Account {
 
     private String accountName;
 
-    //private double openingBalance;
-
     private ArrayList<Transaction> transactions = new ArrayList<>();
 
+    /**
+     * constructor for a new account
+     * @param accountName name of the account
+     * @param openingBalance balance when opening
+     * @param owner username of the account owner
+     */
     public Account(String accountName, double openingBalance, String owner) {
         this.accountName = accountName;
-        //this.openingBalance = openingBalance;
         Transaction t = new Transaction(openingBalance, "opening");
         String currentDate = ""+java.time.LocalDate.now();
         t.setTransParm(accountName,currentDate,owner,"not applicable","not applicable");
         Database.addTransaction(t,1);
     }
 
+    /**
+     * constructor for a new account with existing transactions
+     * @param accountName name of the account
+     * @param transactions transactions so far
+     */
     public Account(String accountName, ArrayList<Transaction> transactions){
         this.accountName = accountName;
         this.transactions = transactions;
     }
 
+    /**
+     * deposit command, not fully implemented
+     * @param amount to deposit
+     */
     public void deposit(double amount) {
-
-        //openingBalance = openingBalance + amount;
         transactions.add(new Transaction(amount, "deposit"));
 
     }
 
+    /**
+     * withdrawal command, not fully implemented
+     * @param amount
+     * @return whether withdrawal was successful
+     */
     public boolean withdraw(double amount) {
         if (getBalance() < amount){
             System.out.println("Insufficient funds in account");
@@ -41,16 +56,12 @@ public class Account {
             transactions.add(new Transaction((amount * (-1)), "withdrawal"));
             return true;
         }
-        /*if (openingBalance < amount) {
-            System.out.println("Insufficient funds in account");
-            return false;
-        } else {
-            openingBalance = openingBalance - amount;
-            return true;
-        }*/
     }
 
-    // get balance by summing transaction array element
+    /**
+     * calculates the current balance based on database data
+     * @return the current balance
+     */
     public double getBalance(){
         double sum = 0;
         for (int i=0; i<transactions.size(); i++){
@@ -59,14 +70,19 @@ public class Account {
         return sum;
     }
 
+    /**
+     * additional DateTime feature, not implemented
+     * @return
+
     public Timestamp getDateTime(){
         Date date = new Date();
         long time = date.getTime();
         Timestamp ts = new Timestamp(time);
         return ts;
     }
+    */
 
-    /** Alternative attempt with TimeStamp
+    /** Alternative balance attempt with TimeStamp
      * call from NewBank showBalanceHistory
     public double getBalanceHistory(Timestamp dateTime){
         double sum = 0;

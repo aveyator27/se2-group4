@@ -11,79 +11,37 @@ import java.io.PrintWriter;
 public class NewBank {
 
     private static final NewBank bank = new NewBank();
-    //private HashMap<String, Customer> customers;
-    //private HashMap<String, Admin> admins;
     private HashMap<String, User> users;
-
     private static final String successString = "SUCCESS";
     private static final String failString = "FAIL";
     private static boolean userCustomer = true;
     private static boolean successfulLogin = false;
     private static List errorList = new ArrayList<String>();
 
+    //List with all errors (for password registration purposes)
     public List getErrorList(){
         return errorList;
     }
 
     private NewBank() {
-        //customers = new HashMap<>();
-        //admins = new HashMap<>();
         users = new HashMap<>();
         addTestData();
     }
 
     private void addTestData() {
-     /*   Customer bhagy = new Customer("1234");
-        bhagy.addAccount(new Account("Main", 1000.0));
-        users.put("Bhagy", bhagy);
-        //    Database.insertCustomer("Bhagy", "1234");
-        //   Database.showCustomerAccounts("Christina");
-        Customer christina = new Customer("Tina01");
-        christina.addAccount(new Account("Main", 800.0));
-        christina.addAccount(new Account("Savings", 1500.0));
-        //   Database.insertAccount(0.00, "Main", "Christina");
-        //   Database.insertAccount(1500.00, "Savings", "Christina");
-        users.put("Christina", christina);
-        //    Database.insertCustomer("Christina", "Tina01");
-        //   Database.findCustomerUsername("Christina");
-        Customer john = new Customer("JohnDoe");
-        john.addAccount(new Account("Main", 800.0));
-        john.addAccount(new Account("Checking", 250.0));
-        users.put("John", john);
-        //     Database.insertAccount(0.00, "Main", "JohnDoe");
-        //   Database.deleteAccount("JohnDoe", "Main");
-        Customer marc = new Customer("password");
-        marc.addAccount(new Account("Main", 134));
-        marc.addAccount(new Account("Savings", 89));
-        marc.addAccount(new Account("BottlecapsStash", 1645));
-        users.put("Marc", marc);
-        //   Database.insertAccount(0.00, "Main","Marc");
-        //   Database.deleteAccount("Marc","Main");
-        //    Database.EditBalance("Main", "1234",100.00);
-        //    Database.EditBalance("Main", "123",100.00);
-        Customer wayne = new Customer("1234");
-        wayne.addAccount(new Account("Main", 134));
-        wayne.addAccount(new Account("Savings", 89));
-        wayne.addAccount(new Account("testing", 1645));
-        users.put("Wayne", wayne);
-        Admin admin = new Admin("1234");
-        users.put("Admin", admin);
-        Admin mel = new Admin("mel");
-        users.put("Mel", mel);
-        //  ArrayList<String> m = Database.showCustomerAccountsFormat("123");
-        //     for (String item : m){
-        //       System.out.println(item);*/
+     //test data, no longer in use
     }
-
-
-
-    // Database.insertAdmin("Sam","1234");
-
 
     public static NewBank getBank() {
         return bank;
     }
 
+    /**
+     * checks a user's login details
+     * @param userName user's username
+     * @param password password of the user
+     * @return the user's userID, otherwise null
+     */
     public synchronized UserID checkLogInDetails(String userName, String password) {
         if (Database.findCustomerUsername(userName) != null) {
             System.out.println(Database.findCustomerUsername(userName));
@@ -99,10 +57,6 @@ public class NewBank {
                 userCustomer = false;
                 return new UserID(userName);
             }
-  /*    if ((users.containsKey(userName) && password.equals(users.get(userName).getPassword()))) {
-            return new UserID(userName);
-        }
-        return null;*/
 
         }
         return null;
@@ -119,17 +73,16 @@ public class NewBank {
             isExisting = true;
         }
         return isExisting;
-        /* pre Database code:
-         AtomicBoolean isExisting = new AtomicBoolean(false);
-        users.forEach((s,cus) ->{
-            if(s.toUpperCase().equals(username.toUpperCase())){
-                isExisting.set(true);
-            }
-        });
-        return (isExisting.get());*/
     }
 
     // commands from the NewBank customers and admins are processed in this method
+
+    /**
+     * commands from the NewBank customers and admins are processed in this method
+     * @param customer the user's username
+     * @param request the request
+     * @return
+     */
     public synchronized String processRequest(UserID customer, String request) {
         String command;
         if (request.contains(" ")) {
@@ -140,7 +93,6 @@ public class NewBank {
 
         System.out.println("Command: " + command);
         if ((userCustomer) &&(successfulLogin))
-        //   if (users.containsKey(customer.getKey())&&users.get(customer.getKey()).userType.equals("customer"))
         {
             //if customer show customer menu
             switch (command) {
@@ -160,7 +112,6 @@ public class NewBank {
                     return failString;
             }
         }  else if ((!userCustomer) &&(successfulLogin))
-        // else if (users.containsKey(customer.getKey())&&users.get(customer.getKey()).userType.equals("admin"))
         {
             //if admin show different menu
             switch (command) {
@@ -180,10 +131,16 @@ public class NewBank {
         return failString;
     }
 
+    /**
+     * checks if registration would be valid
+     * @param username is the potential username
+     * @param password the selected password
+     * @param passwordRepeat a repeat of the selected password
+     * @return whether it is a valid regulation
+     */
     public synchronized boolean isValidReg(String username, String password, String passwordRepeat){
         boolean validReg = true;
         errorList.clear();
-        //List<String> errorList = new ArrayList<String>();
         Pattern specialCharPatten = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
         Pattern UpperCasePatten = Pattern.compile("[A-Z ]");
         Pattern lowerCasePatten = Pattern.compile("[a-z ]");
@@ -222,7 +179,6 @@ public class NewBank {
 
     /**
      * creates a new user account
-     *
      * @param userName is the user's chosen username
      * @param password is the user's chosen password
      * @return whether account was successfully created
@@ -245,44 +201,15 @@ public class NewBank {
     }
 
     private String showAllCustomers(){
-
-     /*  ArrayList<Customer> customers = new ArrayList<Customer>();
-        ArrayList<String> names = new ArrayList<>();
-        String allAccounts = "";
-        users.forEach((s,curUser) ->{
-            if(curUser.userType.equals("customer")){
-                names.add(s);
-                customers.add((Customer) curUser);
-            }
-        });
-        int id = 0;
-        for (String name : names) {
-            allAccounts = allAccounts + "\n" + name + ":" + "\n" + customers.get(id).accountsToString();
-            id++;
-        }
-        return allAccounts;
-        */
         return Database.showAllCustomers();
     }
 
-    private String showAllAccounts(){ //ArrayList<String> names, ArrayList<Customer> customers
-/*
-        String allAccounts = "";
-        int id = 0;
-        for(String name: names){
-            allAccounts = allAccounts+"\n"+name+":"+"\n" + customers.get(id).accountsToString();
-            id++;
-        }
-        return allAccounts;*/
+    private String showAllAccounts(){
         return Database.showAllAccounts();
-
     }
 
     private String showMyAccounts(UserID customer) {
         return Database.showCustomerAccounts(customer.getKey());
-        // pre database code
-        //       System.out.println(users.get(customer.getKey()).accountString);
-        //       return (users.get(customer.getKey())).accountsToString();
     }
 
     /**
@@ -309,51 +236,40 @@ public class NewBank {
     private String showAdminHelp() {
         return ("Please select one of the following options: \n" +
                 "1) To view all customers enter SHOWCUSTOMERS \n" +
-                "1) To view all accounts enter SHOWACCOUNTS \n" +
-                "2) To generate a statement for a customer enter SHOWSTATEMENT followed by their name, e.g. SHOWSTATEMENT Bhagy \n" +
+                "2) To view all accounts enter SHOWACCOUNTS \n" +
+                "3) To generate a statement for a customer enter SHOWSTATEMENT followed by their name, e.g. SHOWSTATEMENT Bhagy \n" +
 
                 "\n0) To exit this menu and close down the program, enter EXIT \n"
         );
     }
 
+    /**
+     * processes a user's request to send money to another user
+     * @param payerID is the username of the user
+     * @param request contains the details of the request
+     * @return confirmation string or error message
+     */
     private String sendMoney(UserID payerID, String request) {
-        Boolean balance = true;
         String[] words = request.split(" ");
         double amount = 0;
         String payee = "";
         String payeeAccount = "";
-        // pre database code Customer payer = (Customer) users.get(payerID.getKey());
-
-        // pre database code  if (payer==null){
-        //      System.out.println("Error: Payer not found");
-        //       return failString;
-        //   }
         if (Database.findCustomerUsername(payerID.getKey()) == null) {
             return("Error: Payer not found");
         }
-        Account payeeMain = null;
-        // pre database code   Account payerMain = payer.getAccounts().get("Main");
         if (Database.findCustomerAccount("Main",payerID.getKey()) == null){
             return "Error: Payer's Main Account not found.";
-            //return failString;
         }
-   /* pre database code    if (payerMain == null ){
-            System.out.println("Error: Payer's Main Account not found.");
-            return failString;
-        }*/
 
         for (int i = 0; i < words.length; i++) {
             if (i == 0) {
                 continue;
             } else if (i == 1) {
-
-                // pre database code     payee = (Customer) users.get(words[i]);
                 if (Database.findCustomerUsername(words[i]) == null ){
                     return "Error: Payee not found.";
                 } else {
                     payee = words[i];
                 }
-                // pre database code payeeMain = payee.getAccounts().get("Main");
                 if (Database.findCustomerAccount("Main",words[i]) == null ){
                     return "Error: Payee's Main Account not found.";
                 } else {
@@ -377,15 +293,17 @@ public class NewBank {
             Database.addTransaction(t1, 1);
             Database.addTransaction(t2, 1);
             return successString;}
-
-        // pre database code  if (payerMain.withdraw(amount)) {
-        //      payeeMain.deposit(amount);
-        //      return successString;
         else {
             return "Insufficient Balance";
         }
     }
 
+    /**
+     * processes a request for a customer statement
+     * @param user username of the customer
+     * @param request request details
+     * @return string representing statement
+     */
     private String showCustomerStatement(UserID user, String request) {
         String userName = null;
         String[] words = request.split(" ");
@@ -395,24 +313,24 @@ public class NewBank {
                 // ignore the command word
                 continue;
             } else if (i == 1) {
-                //    if (users.containsKey(words[1])) {
                 if (!(Database.findCustomerUsername(words[1]) == null)){
                     return Database.showCustomerAccounts(words[1]);
-                    //     return (users.get(words[1]).accountsToString());
                 }
             }
         }
         return failString;
-        //}
     }
 
-
+    /**
+     * processes request to move funds between a customer's accounts
+     * @param customer username of the customer
+     * @param request request details
+     * @return success or error message
+     */
     private String moveFunds(UserID customer, String request) {
         String accountFrom = "";
         String accountTo = "";
         double amount = 0;
-        Account from = null;
-        Account to = null;
         String errormsg = "";
 
         String[] words = request.split(" ");
@@ -426,49 +344,26 @@ public class NewBank {
                 if (amount <= 0) {
                     errormsg = "Amount must be greater than zero";
                     return errormsg;
-                    //System.out.println("Amount must be greater than zero");
-                    //return failString;
                 }
                 System.out.println("Amount: " + amount);
             } else if (i == 2) {
-                //     from = findCustomerAccount(customer, words[i]);
                 accountFrom = words[i];
                 System.out.println("From: " + words[i]);
             } else if (i == 3) {
-                //      to = findCustomerAccount(customer, words[i]);
                 accountTo = words[i];
                 System.out.println("To: " + words[i]);
             }
         }
-
-   /*     if (from == null || to == null) {
-            System.out.println("Error: Request incomplete.");
-            return failString;
-        }*/
         if (Database.findCustomerAccount(accountFrom, customer.getKey()) == null
                 || Database.findCustomerAccount(accountTo, customer.getKey()) == null) {
             errormsg = "Error: Request incomplete.";
-            //System.out.println("Error: Request incomplete.");
-            //return failString;
             return errormsg;
         }
 
-       /*  if (from.withdraw(amount)) {
-            to.deposit(amount);
-            return successString;
-        } else {
-            return failString;
-        }
-*/
         if ((Database.EditBalance(accountFrom, customer.getKey(), -amount))) {
             if (Database.EditBalance(accountTo, customer.getKey(), amount)) {
                 Transaction t1 = new Transaction(-amount,"Funds moved");
-                //    t1.setTransParm();
                 Transaction t2 = new Transaction(amount, "Funds moved");
-                //    Account a1 = findCustomerAccount(customer, accountFrom);
-                //     Account a2 = findCustomerAccount(customer, accountTo);
-                //       a1.addTransaction(t1);
-                //        a2.addTransaction(t2);
                 String currentDate = ""+java.time.LocalDate.now();
                 t1.setTransParm(accountFrom,currentDate,customer.getKey(),customer.getKey(),accountTo);
                 t2.setTransParm(accountTo,currentDate,customer.getKey(),customer.getKey(),accountFrom);
@@ -490,16 +385,15 @@ public class NewBank {
     }
 
     private Account findCustomerAccount(UserID customerID, String accountName) {
-      /*  Customer customer = (Customer) users.get(customerID.getKey());
-        if (customer==null){
-            return null;
-        } else {
-            return customer.getAccounts().get(accountName);
-        }*/
         return Database.getAccount(customerID.getKey(),accountName);
-
     }
 
+    /**
+     * processes request to print a statement
+     * @param customerID the user's username
+     * @param request request details
+     * @return statement to be printed
+     */
     private String printStatement(UserID customerID, String request){
         String[] words = request.split(" ");
         String statement = "";
@@ -507,29 +401,20 @@ public class NewBank {
         for(int i = 0; i<words.length; i++){
             if(i==0){
                 statement = Database.showStatement(customerID.getKey(), "Main");
-                // I need to write a database method for this
             } else if (i==1){
                 statement = Database.showStatement(customerID.getKey(),words[1]);
-                // database method for this
             }
 
         }
          return  statement;
-     /*   if (statementAccount == null){
-            return "Error. Account could not be found";
-        } else {
-            ArrayList<Transaction> transactions = statementAccount.getTransactions();
-            int i = 1;
-            for(Transaction t: transactions){
-                statement = statement+"Transaction: "+i+"\n"+"Date: "+t.getDate()+" Amount: "+t.getAmount()+" Ref:"+t.getRef()+" From/To: "+t.getCustomer()+" Account:"+t.getAccount()+" \n";
-            i++;
-            }
-        }
-        return statement;
-        //  return Database.showStatement(customerID.getKey());
-        return "error";*/
     }
 
+    /**
+     * sets up a new account
+     * @param customerID is the user's username
+     * @param request request details
+     * @return string indicating whether or not request was successful
+     */
     private String newAccount (UserID customerID, String request) {
 
         String[] words = request.split(" ");
@@ -543,9 +428,7 @@ public class NewBank {
 
                 // Second word from split string is accountName
                 String accountName = words[i];
-                // Need to check for non conflicting
                 System.out.println("New Account Name: " + accountName);
-                //   Customer customer = (Customer) users.get(customerID.getKey());
                 //check that not existing account name
                 if (!Database.showCustomerAccounts(customerID.getKey()).contains(accountName)){
                     // customer.addAccount(new Account(accountName, 0));
@@ -556,12 +439,6 @@ public class NewBank {
                 else {
                     return  failString;
                 }
-                /*if (customer.getAccounts().get(accountName)==null){   pre database code
-                    customer.addAccount(new Account(accountName, 0));
-                    return successString;
-                } else {
-                    return failString;
-                }*/
 
             } else if (i>=2){
                 System.out.println("Account name must only contain one word");

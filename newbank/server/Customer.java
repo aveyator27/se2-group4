@@ -12,22 +12,27 @@ public class Customer extends User{
 
     private HashMap<String, Account> accounts;
 
+    /**
+     * Constructor for a new customer
+     * Now legacy as database used
+     * @param password is the user's password
+     */
     public Customer(String password) {
         this.password = password;
         this.userType = "customer";
         accounts = new HashMap<>();
     }
 
+    /**
+     * Turns a user's account details into a string
+     * @return string with all account names and balances
+     */
     public String accountsToString() {
         String s = "";
         for (Map.Entry<String, Account> entry : accounts.entrySet()) {
             s += entry.getValue().toString();
         }
         return s;
-    }
-
-    public void addAccount(Account account) {
-        accounts.put(account.getAccountName(), account);
     }
 
     public HashMap<String, Account> getAccounts() {

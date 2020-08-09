@@ -16,17 +16,8 @@ public class Transaction {
     public Transaction(double amount, String reference){
         t_Amount=amount;
         t_Ref=reference;
-       // t_DateTime=dateTime;
     }
 
-    /*alternative attempt with dateTime
-        public Timestamp getDate(){
-            return t_DateTime;
-        }
-
-        public void setDate(Timestamp dateTime){
-            this.t_DateTime = dateTime;
-        }*/
 
     public String getDate(){
         return t_Date;

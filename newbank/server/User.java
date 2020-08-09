@@ -1,7 +1,5 @@
 package newbank.server;
 
-import java.util.Map;
-
 public class User {
     String password;
     String userType;

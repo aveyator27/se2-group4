@@ -10,12 +10,15 @@ import java.util.ArrayList;
 
 public class Database {
 
-
+    /**
+     * Connects to the database
+     * @return the connection
+     */
     public static Connection connect() {
         Connection conn = null;
-        try {                // "jdbc:sqlite:/Users/samueljewell/NewBanklatest11/db/bankDatabase.db"
-            // db parameters
-            String url = "jdbc:sqlite:db/bankDatabase.db";      // jdbc:sqlite:bankDatabase.db  // jdbc:sqlite:db/bankDatabase.db
+        try {
+            // database parameters
+            String url = "jdbc:sqlite:db/bankDatabase.db";
             // create a connection to the database
             conn = DriverManager.getConnection(url);
             if (conn != null) {
@@ -27,6 +30,11 @@ public class Database {
         return null;
     }
 
+    /**
+     * insert a new customer into the database
+     * @param username the new customers username
+     * @param password the new customers password
+     */
     public static void insertCustomer(String username, String password) {
         String sql = "INSERT INTO customers(username, password) values(?, ?)";
         try (Connection conn = Database.connect();
@@ -41,6 +49,12 @@ public class Database {
 
     }
 
+    /**
+     * adds a admin user to the database
+     * not yet in use
+     * @param username is the admin's username
+     * @param password is the admin's password
+     */
     public static void insertAdmin(String username, String password) {
         String sql = "INSERT INTO admin(username, password, userType) values(?, ?, ?)";
         try (Connection conn = Database.connect();
@@ -54,6 +68,12 @@ public class Database {
         }
     }
 
+    /**
+     * inserts a new account into the database
+     * @param openingBalance the balance for the account
+     * @param accountName the name of the new account
+     * @param owner the username of the owner of the account
+     */
     public static void insertAccount(double openingBalance, String accountName, String owner) {
         String sql = "INSERT INTO accounts(openingBalance, accountName, owner) values(?, ?, ?)";
         try (Connection conn = Database.connect();
@@ -68,6 +88,10 @@ public class Database {
         }
     }
 
+    /**
+     * creates a String representing a list of all customers in the system
+     * @return the list of customers' usernames
+     */
     public static String showAllCustomers() {
         String sql = "SELECT * FROM customers";
         String customers = "";
@@ -75,7 +99,6 @@ public class Database {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             // loop through the result set
-
             while (rs.next()) {
                 customers += "username :" + (rs.getString("username")) + "\n";
             }
@@ -87,6 +110,10 @@ public class Database {
         return null;
     }
 
+    /**
+     * creates a string list of all customers' accounts in the system
+     * @return a string showing all customers and their relative accounts
+     */
     public static String showAllAccounts() {
         String sql = "SELECT * FROM accounts";
 
@@ -98,8 +125,8 @@ public class Database {
             String accounts = "";
             while (rs.next()) {
                 accounts += "Balance :" + (rs.getString("openingBalance") + ": " +
-                        "accountName" + ": " + rs.getString("accountName")) + ": "
-                        + "owner" + ": " + rs.getString("owner") + "\n";
+                        "Account Name" + ": " + rs.getString("accountName")) + ": "
+                        + "Owner" + ": " + rs.getString("owner") + "\n";
             }
             return accounts;
         } catch (SQLException e) {
@@ -110,6 +137,11 @@ public class Database {
 
     }
 
+    /**
+     * returns all accounts of a particular customer as a string list
+     * @param owner username of the customer
+     * @return string representing list of accounts
+     */
     public static String showCustomerAccounts(String owner) {
         String sql = "SELECT * FROM accounts WHERE owner = ?";
 
@@ -117,14 +149,8 @@ public class Database {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, owner);
             ResultSet rs = pstmt.executeQuery();
-            // conn.close();
             // loop through the result set
             String allAccounts = "";
-         /*   while (rs.next()) {
-                System.out.println(rs.getDouble("openingBalance") + "|" +
-                        rs.getString("accountName") + "|" +
-                        rs.getString("owner"));
-            }*/
             while (rs.next()) {
                 allAccounts += rs.getString("accountName") + ": "
                         + rs.getDouble("openingBalance") + ": "
@@ -135,55 +161,11 @@ public class Database {
             System.out.println(e.getMessage());
         }
         return null;
-
-    }
-    public static String showCustomerAccountsCreation(String owner) {
-        String sql = "SELECT * FROM accounts WHERE owner = ?";
-
-        try (Connection conn = Database.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, owner);
-            ResultSet rs = pstmt.executeQuery();
-            // conn.close();
-            // loop through the result set
-            String allAccounts = "";
-         /*   while (rs.next()) {
-                System.out.println(rs.getDouble("openingBalance") + "|" +
-                        rs.getString("accountName") + "|" +
-                        rs.getString("owner"));
-            }*/
-            while (rs.next()) {
-                allAccounts += rs.getString("accountName")
-                        + rs.getDouble("openingBalance")
-                        + rs.getString("owner");
-            }
-            return allAccounts;
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
-
     }
 
-    public static ArrayList<String> showCustomerAccountsFormat(String owner) {
-        String sql = "SELECT * FROM accounts WHERE owner = ?";
-
-        try (Connection conn = Database.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, owner);
-            ResultSet rs = pstmt.executeQuery();
-            ArrayList<String> allAccounts = new ArrayList();
-            while (rs.next()) {
-                allAccounts.add(rs.getString("accountName"));
-            }
-            return allAccounts;
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
-
-    }
-
+    /**
+     * deletes an account from the database, currently unused
+     */
     public static void deleteAccount(String owner, String accountName) {
         String sql = "DELETE FROM accounts WHERE owner = ? AND accountName = ?";
 
@@ -197,6 +179,11 @@ public class Database {
         }
     }
 
+    /**
+     * returns a customer based on their username
+     * @param username
+     * @return username to confirm they exist
+     */
     public static String findCustomerUsername(String username) {
         String sql = "SELECT username FROM customers WHERE username = ?";
 
@@ -205,8 +192,6 @@ public class Database {
 
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
-            //   System.out.println(rs.getString("username") +  "\t" +
-            //                rs.getString("password"));
 
             return rs.getString("username");
 
@@ -216,6 +201,11 @@ public class Database {
         return null;
     }
 
+    /**
+     * confirms whether a customer password is correct
+     * @param username is the username of the user being checked
+     * @return password if correct
+     */
     public static String findCustomerPassword(String username) {
         String sql = "SELECT password FROM customers WHERE username = ?";
 
@@ -232,6 +222,11 @@ public class Database {
         return null;
     }
 
+    /**
+     * returns admin based on their username
+     * @param username
+     * @return username to confirm they exist
+     */
     public static String findAdminUsername(String username) {
         String sql = "SELECT username FROM admin WHERE username = ?";
 
@@ -251,6 +246,12 @@ public class Database {
         return null;
     }
 
+    /**
+     /**
+     * confirms whether a admin password is correct
+     * @param username is the username of the user being checked
+     * @return password if correct
+     */
     public static String findAdminPasword(String username) {
         String sql = "SELECT password FROM admin WHERE username = ?";
 
@@ -259,8 +260,6 @@ public class Database {
 
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
-            //   System.out.println(rs.getString("username") +  "\t" +
-            //                rs.getString("password"));
 
             return rs.getString("password");
 
@@ -270,6 +269,13 @@ public class Database {
         return null;
     }
 
+    /**
+     * edit the balance of an account in the database
+     * @param accountName name of the account
+     * @param owner username of the owner
+     * @param amount new balance
+     * @return
+     */
     public static boolean EditBalance(String accountName, String owner, Double amount) {
         double newBalance = Database.getBalance(accountName, owner) + amount;
         if (newBalance < 0){
@@ -278,7 +284,6 @@ public class Database {
         String sql = "UPDATE accounts SET openingBalance = ? WHERE owner = ? AND accountName = ?";
         try (Connection conn = Database.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setDouble(1, newBalance);
             pstmt.setString(2, owner);
             pstmt.setString(3, accountName);
@@ -288,8 +293,16 @@ public class Database {
             System.out.println(e.getMessage());
             return false;
         }
-
     }
+
+    /**
+     * moves money from one account to another in
+     * @param accountNameFrom account money is deducted from
+     * @param accountNameTo account money is added to
+     * @param owner owner of the accounts
+     * @param amount amount of money moved
+     * @return
+     */
     public static boolean EditBalanceMove(String accountNameFrom,String accountNameTo, String owner, Double amount) {
         double newBalance = 0;
         boolean balanceCheck = Database.getBalance(accountNameFrom, owner) > amount;
@@ -311,15 +324,18 @@ public class Database {
             System.out.println(e.getMessage());
             return false;
         }
-
     }
 
+    /**
+     * gets the current balance of an account from the database
+     * @param accountName name of the account
+     * @param owner owner of the account
+     * @return
+     */
     public static Double getBalance(String accountName, String owner) {
         String sql = "SELECT openingBalance FROM accounts WHERE accountName = ? AND owner = ?";
-
         try (Connection conn = Database.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
             pstmt.setString(1, accountName);
             pstmt.setString(2, owner);
             ResultSet rs = pstmt.executeQuery();
@@ -329,9 +345,14 @@ public class Database {
             System.out.println(e.getMessage());
         }
         return -1.1;
-
-
     }
+
+    /**
+     * finds a customer account
+     * @param accountName name of the account
+     * @param owner owner of the account
+     * @return name of the account if it exists
+     */
     public static String findCustomerAccount(String accountName, String owner) {
         String sql = "SELECT accountName = ? FROM accounts WHERE owner = ?";
 
@@ -350,6 +371,11 @@ public class Database {
         return null;
     }
 
+    /**
+     * add a new transaction to the database
+     * @param t is the transaction
+     * @param index the current index
+     */
     public static void addTransaction(Transaction t, int index){
         String customername = t.getCustomer();
         String accountname = t.getAccount();
@@ -374,6 +400,12 @@ public class Database {
             System.out.println(e.getMessage()); }
     }
 
+    /**
+     * confirms an account exists
+     * @param customerName the customers name
+     * @param accountName the account name
+     * @return account name if it exists, otherwise null
+     */
     public static Account getAccount(String customerName, String accountName){
         String sql = "SELECT * FROM transactions WHERE CustomerName = ? AND AccountName = ?";
         try {
@@ -387,8 +419,6 @@ public class Database {
                 return null;
             }
             while (rs.next()) {
-                // add the transaction to the ArrayList
-                //...
                 Transaction t = new Transaction(rs.getDouble("Double"), rs.getString("t_Ref"));
                 transactions.add(t);
             }
@@ -398,6 +428,13 @@ public class Database {
             return null;
         }
     }
+
+    /**
+     * creates a string representing the customer's statement
+     * @param customer is the username of the customer
+     * @param account the name of the account
+     * @return string that represents the statement
+     */
     public static String showStatement(String customer, String account) {
         String sql = "SELECT * FROM transactions WHERE customerName = ? AND accountName = ?";
 
@@ -416,8 +453,6 @@ public class Database {
                         rs.getString("t_Account") + ": " +
                         rs.getString("t_Date")
                         + "\n";
-                //    + rs.getString("t_Customer") + ": "
-                //    + rs.getString("t_Account") + ": "
 
             }
             return statement;
@@ -425,7 +460,6 @@ public class Database {
             System.out.println(e.getMessage());
         }
         return null;
-
     }
 }
 
